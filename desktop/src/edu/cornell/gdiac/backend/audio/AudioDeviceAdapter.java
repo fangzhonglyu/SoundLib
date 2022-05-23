@@ -63,6 +63,16 @@ public class AudioDeviceAdapter implements AudioDevice {
     public void setVolume (float volume) {
     }
 
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
     /** 
      * Returns whether this device is in mono or stereo mode.
      *

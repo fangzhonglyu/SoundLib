@@ -1,13 +1,10 @@
 package edu.cornell.gdiac.audio.desktop;
 
 import edu.cornell.gdiac.backend.*;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import edu.cornell.gdiac.audio.GDXRoot;
 
 import java.nio.IntBuffer;
 import java.nio.ByteBuffer;
-import org.lwjgl.LWJGLException;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 

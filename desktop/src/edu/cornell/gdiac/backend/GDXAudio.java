@@ -16,16 +16,18 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.audio.*;
 import com.badlogic.gdx.backends.lwjgl3.audio.JavaSoundAudioRecorder;
+import com.badlogic.gdx.backends.lwjgl3.audio.OpenALAudioDevice;
+import com.badlogic.gdx.backends.lwjgl3.audio.OpenALMusic;
+import com.badlogic.gdx.backends.lwjgl3.audio.OpenALSound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.*;
 import edu.cornell.gdiac.audio.*;
 import edu.cornell.gdiac.backend.audio.*;
+import lwjgl3.LWJGLUtil;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.LWJGLException;
 import org.lwjgl.system.Library;
 import org.lwjgl.system.Platform;
-import org.lwjgl.Sys;
 import org.lwjgl.openal.*;
 
 import java.lang.reflect.Method;
@@ -122,8 +124,8 @@ public class GDXAudio implements AudioEngine {
 
         try {
             findPaths();
-            AL.myALCreate();
-        } catch (GdxRuntimeException ex) {
+            ALC.create();
+        } catch (Exception ex) {
             noDevice = true;
             ex.printStackTrace();
             return;
@@ -220,14 +222,14 @@ public class GDXAudio implements AudioEngine {
         allSources.clear();
         sourceToIndex.clear();
         indexToSource.clear();
-
-        AL.destroy();
-        while (AL.isCreated()) {
+        ALC.destroy();
+        //I have not found a replacement for that
+        /*while (AL.isCreated()) {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
             }
-        }
+        }*/
     }
 
     /**
@@ -760,8 +762,7 @@ public class GDXAudio implements AudioEngine {
      */
     public float getSourcePan(int sourceId) {
         if (sourceId != -1 && !noDevice) {
-            ALC10.alGetS
-            AL10.alGetSource(sourceId, AL10.AL_POSITION, floatdata);
+            AL10.alGetSourcef(sourceId, AL10.AL_POSITION, floatdata);
             float x = (float)Math.acos(floatdata.get());
             floatdata.clear();
             return (2*x/MathUtils.PI)+1;
@@ -2170,7 +2171,7 @@ public class GDXAudio implements AudioEngine {
          * @param source    The source to place
          */
         public synchronized void setSource(int pos, AudioSource source) {
-            int nformat = AL10.AL_FORMAT_VORBIS_EXT;
+            int nformat = 0x10003;
             if (source.getChannels() <= 2) {
                 nformat = source.getChannels() == 1 ? AL10.AL_FORMAT_MONO16 : AL10.AL_FORMAT_STEREO16;
             }
@@ -2192,7 +2193,7 @@ public class GDXAudio implements AudioEngine {
          */
         @Override
         public synchronized void addSource(AudioSource source) {
-            int nformat = AL10.AL_FORMAT_VORBIS_EXT;
+            int nformat = 0x10003;
             if (source.getChannels() <= 2) {
                 nformat = source.getChannels() == 1 ? AL10.AL_FORMAT_MONO16 : AL10.AL_FORMAT_STEREO16;
             }
@@ -2215,7 +2216,7 @@ public class GDXAudio implements AudioEngine {
          */
         @Override
         public synchronized void insertSource(int pos, AudioSource source) {
-            int nformat = AL10.AL_FORMAT_VORBIS_EXT;
+            int nformat = 0x10003;
             if (source.getChannels() <= 2) {
                 nformat = source.getChannels() == 1 ? AL10.AL_FORMAT_MONO16 : AL10.AL_FORMAT_STEREO16;
             }

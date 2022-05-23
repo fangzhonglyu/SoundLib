@@ -11,8 +11,6 @@ package edu.cornell.gdiac.backend;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.backends.lwjgl.*;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import lwjgl3.Lwjgl3Application;
 
 /**
