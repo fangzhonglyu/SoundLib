@@ -15,7 +15,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.audio.*;
-import com.badlogic.gdx.backends.lwjgl.audio.*;
+import com.badlogic.gdx.backends.lwjgl3.audio.JavaSoundAudioRecorder;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.*;
@@ -23,7 +23,8 @@ import edu.cornell.gdiac.audio.*;
 import edu.cornell.gdiac.backend.audio.*;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
-import org.lwjgl.LWJGLUtil;
+import org.lwjgl.system.Library;
+import org.lwjgl.system.Platform;
 import org.lwjgl.Sys;
 import org.lwjgl.openal.*;
 
@@ -121,8 +122,8 @@ public class GDXAudio implements AudioEngine {
 
         try {
             findPaths();
-            AL.create();
-        } catch (LWJGLException ex) {
+            AL.myALCreate();
+        } catch (GdxRuntimeException ex) {
             noDevice = true;
             ex.printStackTrace();
             return;
@@ -150,12 +151,12 @@ public class GDXAudio implements AudioEngine {
         floatdata = BufferUtils.createFloatBuffer( 4 );
     }
 
-    private void findPaths() throws LWJGLException {
+    private void findPaths() throws Exception {
         String libname;
         String[] library_names;
-        switch (LWJGLUtil.getPlatform()) {
-            case LWJGLUtil.PLATFORM_WINDOWS:
-                if ( Sys.is64Bit() ) {
+        switch (Platform.get()) {
+            case WINDOWS:
+                if ( Platform.getArchitecture().equals(Platform.Architecture.ARM64)||Platform.getArchitecture().equals(Platform.Architecture.X64)) {
                     libname = "OpenAL64";
                     library_names = new String[]{"OpenAL64.dll"};
                 } else {
@@ -163,16 +164,16 @@ public class GDXAudio implements AudioEngine {
                     library_names = new String[]{"OpenAL32.dll"};
                 }
                 break;
-            case LWJGLUtil.PLATFORM_LINUX:
+            case LINUX:
                 libname = "openal";
                 library_names = new String[]{"libopenal64.so", "libopenal.so", "libopenal.so.0"};
                 break;
-            case LWJGLUtil.PLATFORM_MACOSX:
+            case MACOSX:
                 libname = "openal";
                 library_names = new String[]{"openal.dylib"};
                 break;
             default:
-                throw new LWJGLException("Unknown platform: " + LWJGLUtil.getPlatform());
+                throw new GdxRuntimeException("Unknown platform: " + Platform.get());
         }
 
         try {
@@ -759,6 +760,7 @@ public class GDXAudio implements AudioEngine {
      */
     public float getSourcePan(int sourceId) {
         if (sourceId != -1 && !noDevice) {
+            ALC10.alGetS
             AL10.alGetSource(sourceId, AL10.AL_POSITION, floatdata);
             float x = (float)Math.acos(floatdata.get());
             floatdata.clear();

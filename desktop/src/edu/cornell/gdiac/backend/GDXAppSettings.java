@@ -9,16 +9,16 @@
  */
 package edu.cornell.gdiac.backend;
 
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.LifecycleListener;
 import com.badlogic.gdx.Graphics;
+import lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
-import org.lwjgl.LWJGLUtil;
+import lwjgl3.Lwjgl3Graphics;
 
 /**
  * This class configures the launch settings for an instance of {@link GDXApp}.
  *
- * This class is a simplification of {@link LwjglApplicationConfiguration}, removing some of the settings that we
+ * This class is a simplification of {@link Lwjgl3ApplicationConfiguration}, removing some of the settings that we
  * do not want students to touch.
  */
 public class GDXAppSettings {
@@ -89,33 +89,25 @@ public class GDXAppSettings {
     public boolean pauseWhenBackground = false;
 
     /**
-     * Returns the equivalent {@link LwjglApplicationConfiguration} for this {@link GDXApp} configuration.
+     * Returns the equivalent {@link Lwjgl3ApplicationConfiguration} for this {@link GDXApp} configuration.
      *
-     * @return the equivalent {@link LwjglApplicationConfiguration} for this {@link GDXApp} configuration.
+     * @return the equivalent {@link Lwjgl3ApplicationConfiguration} for this {@link GDXApp} configuration.
      */
-    LwjglApplicationConfiguration getLwjglConfiguration() {
-        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        config.title = title;
-        config.width = width;
-        config.height = height;
-        config.x = x;
-        config.y = y;
-        config.fullscreen = fullscreen;
+    Lwjgl3ApplicationConfiguration getLwjgl3Configuration() {
+        Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+        config.setTitle(title);
+        config.setWindowedMode(width,height);
+        config.setWindowPosition(x,y);
+        config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
         config.vSyncEnabled = vSyncEnabled;
-        config.useHDPI = useHDPI;
         config.samples = samples;
-        config.useGL30 = false; //true;
-        config.forceExit = forceExit;
-        config.resizable = resizable;
-        config.audioDeviceBufferCount = audioDeviceBufferCount;
-        config.audioDeviceBufferSize  = audioDeviceBufferSize;
-        config.audioDeviceSimultaneousSources = audioDeviceSimultaneousSources;
-        config.initialBackgroundColor = initialBackgroundColor;
-        config.foregroundFPS = foregroundFPS;
-        config.backgroundFPS = backgroundFPS;
-        config.pauseWhenBackground = pauseWhenBackground;
-        config.pauseWhenMinimized = pauseWhenMinimized;
-        config.disableAudio = true; // Why did you force me to do this?
+        config.glEmulation = Lwjgl3ApplicationConfiguration.GLEmulation.GL20;//GL30
+        config.setResizable(resizable);
+        config.setAudioConfig(audioDeviceSimultaneousSources,audioDeviceBufferSize,audioDeviceBufferCount);
+        config.setInitialBackgroundColor(initialBackgroundColor);
+        config.setForegroundFPS(foregroundFPS);
+        config.setIdleFPS(backgroundFPS); //is this right?
+        config.disableAudio(true); // Why did you force me to do this?
         return config;
     }
 }

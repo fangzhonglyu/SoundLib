@@ -12,14 +12,16 @@ package edu.cornell.gdiac.backend;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.lwjgl.*;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import lwjgl3.Lwjgl3Application;
 
 /**
  * This class represents a desktop game application using Lwjgl.
  *
- * This class is preferable to {@link LwjglApplication} because it is guaranteed to use GL30, and it has
+ * This class is preferable to {@link Lwjgl3Application} because it is guaranteed to use GL30, and it has
  * a slightly more useful audio engine.
  */
-public class GDXApp extends LwjglApp {
+public class GDXApp extends Lwjgl3Application {
     /** Settings, remembered for second initialization phase */
     protected GDXAppSettings config;
 
@@ -36,7 +38,7 @@ public class GDXApp extends LwjglApp {
      * @param config    The game settings
      */
     public GDXApp(ApplicationListener listener, GDXAppSettings config) {
-        super( listener, config.getLwjglConfiguration() );
+        super( listener, config.getLwjgl3Configuration() );
         this.config = config;
         if (config.useAudio) {
             try {
@@ -44,13 +46,12 @@ public class GDXApp extends LwjglApp {
                         config.audioDeviceBufferCount,
                         config.audioDeviceBufferSize );
                 Gdx.audio = audio;
-                LwjglApplicationConfiguration.disableAudio = false;
+                //Lwjgl3ApplicationConfiguration = false;
             } catch (Throwable t) {
                 log( "GDXApp", "Couldn't initialize audio, disabling audio", t );
-                LwjglApplicationConfiguration.disableAudio = true;
+                //Lwjgl3ApplicationConfiguration.disableAudio = true;
                 config.useAudio = false;
             }
         }
-        initialize();
     }
 }
