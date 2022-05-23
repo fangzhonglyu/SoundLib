@@ -1,0 +1,47 @@
+{
+	"textures": {
+		"logo": {
+			"file":     "badlogic.jpg",
+            "wrapU":    "repeated",
+            "wrapV":    "repeated"
+		},
+        "progress": {
+            "file":      "progressbar.png",
+            "wrapU":     "clamped",
+            "wrapV":     "clamped",
+            "minFilter": "linear",
+            "magFilter": "linear",
+            "atlas":     {
+                "background" : [0,    5, 400, 35],
+                "foreground" : [16,  45, 384, 75],
+                "leftcap"    : [0,   45,  16, 75],
+                "rightcap"   : [384, 45, 400, 75]
+            }
+        }
+	},
+    "sounds": {
+        "failurewav": "Failure.wav",
+        "failureogg": "Failure.ogg",
+        "failuremp3": "Failure.mp3"
+    },
+    "music": {
+        "twofer": {
+            "mono"       : false,
+            "sampleRate" : 44100,
+            "volume"     : 1.0,
+            "pan"        : 1,
+            "pitch"      : 1,
+            "sources" : [
+                "Dodge.mp3",
+                "Failure.mp3"
+            ]
+        }
+    },
+	"fonts": {
+		"retro": {
+			"file":     "MarkerFelt.ttf",
+			"size":     64,
+            "color":    "blue"
+		}
+	}
+}
