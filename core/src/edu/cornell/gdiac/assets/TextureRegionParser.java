@@ -1,9 +1,6 @@
 package edu.cornell.gdiac.assets;
 
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.TextureLoader;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.JsonValue;
@@ -29,12 +26,10 @@ public class TextureRegionParser implements AssetParser<TextureRegion> {
     }
 
     public void processNext(AssetManager manager, ObjectMap<String,String> keymap) {
-        System.out.println("Processing "+atlas.name());
         if (atlas.size < 4) {
             throw new GdxRuntimeException( "Rectangle "+atlas+" is not valid");
         }
         String file = root.getString( "file", null );
-        System.out.println("The PARENT file is "+file);
         if (file == null) {
             advance();
             return;

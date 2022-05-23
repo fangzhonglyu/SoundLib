@@ -10,13 +10,28 @@ package edu.cornell.gdiac.assets;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.JsonValue;
 
 /**
  *  This class is a collection of static functions to access data in a JSON file.
  */
 public class ParserUtils {
+
+    public static String safeConcatenate(String first, String second, char sep, char alt) {
+        StringBuffer suffix = new StringBuffer();
+        for (int ii = 0; ii < second.length(); ii++) {
+            char c = second.charAt( ii );
+            if (c == alt) {
+                suffix.append( alt );
+                suffix.append( alt );
+            } else if (c == sep) {
+                suffix.append( alt );
+            } else {
+                suffix.append( c );
+            }
+        }
+        return first + sep + suffix.toString();
+    }
 
     /**
      * Returns the {@link Color} represented by the given JSON entry
@@ -115,41 +130,4 @@ public class ParserUtils {
         }
         return defaultWrap;
     }
-
-    /**
-     * Returns the {@link FreeTypeFontGenerator.Hinting} represented by the given JSON entry
-     *
-     * The texture filter is specified by a string of lowercase letters. Compound
-     * words are separated by spaces. So "auto medium" is AutoMedium.
-     *
-     * @param json            The JSON entry to parse
-     * @param defaultHinting  The default hinting on failure
-     *
-     * @return the {@link FreeTypeFontGenerator.Hinting} represented by the given JSON entry
-     */
-    public static FreeTypeFontGenerator.Hinting parseHinting(JsonValue json, FreeTypeFontGenerator.Hinting defaultHinting) {
-        if (json == null || json.asString() == null) {
-            return defaultHinting;
-        }
-        String hinting = json.asString().toLowerCase();
-        if (hinting.equals( "auto medium" )) {
-            return FreeTypeFontGenerator.Hinting.AutoMedium;
-        } else if (hinting.equals( "auto full" )) {
-            return FreeTypeFontGenerator.Hinting.AutoFull;
-        } else if (hinting.equals( "auto slight" )) {
-            return FreeTypeFontGenerator.Hinting.AutoSlight;
-        } else if (hinting.equals( "medium" )) {
-            return FreeTypeFontGenerator.Hinting.Medium;
-        } else if (hinting.equals( "full" )) {
-            return FreeTypeFontGenerator.Hinting.Full;
-        } else if (hinting.equals( "slight" )) {
-            return FreeTypeFontGenerator.Hinting.Slight;
-        } else if (hinting.equals( "none" )) {
-            return FreeTypeFontGenerator.Hinting.None;
-        }
-        return defaultHinting;
-    }
-
-
-
 }

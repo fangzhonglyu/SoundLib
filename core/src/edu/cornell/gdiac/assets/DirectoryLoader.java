@@ -15,11 +15,9 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.*;
 
-import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.assets.loaders.*;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
-import com.badlogic.gdx.files.FileHandle;
 
 /**
  * This class is an {@link AssetLoader} to load {@link AssetDirectory.Index} assets.
@@ -127,8 +125,6 @@ public class DirectoryLoader extends AsynchronousAssetLoader<AssetDirectory.Inde
         JsonReader reader = new JsonReader();
         cachedData = new AssetDirectory.Index();
         cachedData.directory = reader.parse(file);
-        System.out.println("Read json!");
-        System.out.flush();
         for(AssetParser<?> parser : parsers) {
             ObjectMap<String,String> keys = cachedData.keymap.get( parser.getType(), null );
             if (keys == null) {
