@@ -12,6 +12,7 @@ package edu.cornell.gdiac.backend;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ApplicationListener;
 import lwjgl3.Lwjgl3Application;
+import lwjgl3.Lwjgl3ApplicationConfiguration;
 
 /**
  * This class represents a desktop game application using Lwjgl.
@@ -44,10 +45,9 @@ public class GDXApp extends Lwjgl3Application {
                         config.audioDeviceBufferCount,
                         config.audioDeviceBufferSize );
                 Gdx.audio = audio;
-                //Lwjgl3ApplicationConfiguration = false;
+                config.useAudio = true;
             } catch (Throwable t) {
                 log( "GDXApp", "Couldn't initialize audio, disabling audio", t );
-                //Lwjgl3ApplicationConfiguration.disableAudio = true;
                 config.useAudio = false;
             }
         }

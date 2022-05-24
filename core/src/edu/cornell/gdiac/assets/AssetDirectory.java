@@ -16,7 +16,6 @@
  */
 package edu.cornell.gdiac.assets;
 
-import com.badlogic.gdx.assets.loaders.MusicLoader;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.audio.*;
@@ -25,6 +24,7 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.assets.loaders.*;
 import com.badlogic.gdx.assets.loaders.resolvers.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import edu.cornell.gdiac.audio.*;
 //import edu.cornell.gdiac.utils.ResourceManager;
 
 /**
@@ -39,8 +39,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
  * objects.  However, it also requires {@link AssetParser} objects.  An asset parser
  * takes an JSON entry in the directory and instructs the appropriate loader how to
  * load that file.  This class has built in parsers for the classes {@link Texture}, 
- * {@link TextureRegion},  {@link BitmapFont}, {@link Sound}, {@link Music}, and
- * {@link JsonValue}.
+ * {@link TextureRegion},  {@link BitmapFont}, {@link SoundBuffer}, {@link MusicBuffer}, 
+ * and {@link JsonValue}.
  *
  * If you wish to add custom assets, you need to add BOTH a custom {@link AssetLoader}
  * and a custom {@link AssetParser} to this manager.  While a type can only have one
@@ -134,16 +134,20 @@ public class AssetDirectory extends AssetManager {
         // Add the default loaders
         topLoader = new DirectoryLoader( resolver );
         setLoader( Index.class, topLoader );
-        //setLoader( BitmapFont.class, new BitmapFontLoader( resolver ) ); // fallback
+        setLoader( BitmapFont.class, new BitmapFontLoader( resolver ) ); // fallback
 
-        setLoader( Sound.class, new com.badlogic.gdx.assets.loaders.SoundLoader( resolver ) );
-        setLoader( Music.class, new com.badlogic.gdx.assets.loaders.MusicLoader( resolver ) );
+        setLoader( AudioSource.class, new AudioSourceLoader( resolver ) );
+        setLoader( Sound.class, new SoundLoader( resolver ) );
         setLoader( Music.class, new MusicLoader( resolver ) );
+        setLoader( SoundBuffer.class, new SoundBufferLoader( resolver ) );
+        setLoader( MusicBuffer.class, new MusicBufferLoader( resolver ) );
 
         setLoader( Pixmap.class, new PixmapLoader( resolver ) );
         setLoader( Texture.class, new TextureLoader( resolver ) );
         setLoader( TextureAtlas.class, new TextureAtlasLoader( resolver ) );
         setLoader( TextureRegion.class, new TextureRegionLoader( resolver ) );
+
+        setLoader( JsonValue.class, new JsonValueLoader( resolver ) );
 
         // Why not?
         setLoader( Skin.class, new SkinLoader( resolver ) );
@@ -153,21 +157,10 @@ public class AssetDirectory extends AssetManager {
         // And now the default parsers
         topLoader.addParser( new TextureParser() );
         topLoader.addParser( new TextureRegionParser() );
-        topLoader.addParser( new SoundParser() );
-        topLoader.addParser( new MusicParser() );
+        topLoader.addParser( new SoundBufferParser() );
+        topLoader.addParser( new MusicBufferParser() );
     }
-
-    /**
-     * Returns the progress in percent of completion.
-     *
-     * @return the progress in percent of completion.
-     */
-    public synchronized float getProgress () {
-        // This is a workaround for the problem with getProgress in AssetManager
-        if (getLoadedAssets() == 0) { return 0.0f; }
-        return (float)getLoadedAssets()/(getLoadedAssets()+getQueuedAssets());
-    }
-
+    
     /**
      * Returns the file name for the asset directory.
      *
@@ -182,7 +175,7 @@ public class AssetDirectory extends AssetManager {
      * 
      * Each asset must have an associated {@link AssetParser} for this to work.
      * There are default parsers for the classes {@link Texture}, {@link TextureRegion},
-     * {@link BitmapFont}, {@link Sound}, {@link Music}, {@link JsonValue}.
+     * {@link BitmapFont}, {@link SoundBuffer}, {@link MusicBuffer}, {@link JsonValue}.
      *
      * Any additional asset parsers should be added with the {@link #addParser} method. 
      */
@@ -191,7 +184,6 @@ public class AssetDirectory extends AssetManager {
         params.loadedCallback = callback;
         load( filename, Index.class, params );
     }
-
     
     /**
      * Unloads all assets previously loaded by {@link #loadAssets}.
@@ -251,22 +243,6 @@ public class AssetDirectory extends AssetManager {
      */
     public void removeParser(AssetParser<?> parser) {
         topLoader.removeParser(parser);
-    }
-
-    /**
-     * Returns the asset keys with the given directory
-     *
-     * @return the asset  keys with the given directory
-     */
-    public Array<String> getEntryKeys() {
-        Array<String> result = new Array<String>();
-
-        for(ObjectMap<String, String> value: contents.keymap.values()) {
-            for(String key : value.keys()) {
-                result.add( key );
-            }
-        }
-        return result;
     }
 
     /**

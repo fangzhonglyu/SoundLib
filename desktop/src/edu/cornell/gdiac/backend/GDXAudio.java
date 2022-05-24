@@ -33,6 +33,10 @@ import org.lwjgl.openal.*;
 import java.lang.reflect.Method;
 import java.nio.*;
 
+import static org.lwjgl.openal.AL10.alGetError;
+import static org.lwjgl.openal.ALC10.*;
+import static org.lwjgl.openal.ALC10.alcMakeContextCurrent;
+
 /**
  * This class is an implementation of the {@link Audio} interface using OpenAL.
  *
@@ -61,7 +65,8 @@ public class GDXAudio implements AudioEngine {
     
     /** Whether audio has been disabled */
     private boolean noDevice = false;
-    
+
+    private long device,context;
     /** The audio source classes for each file type */
     private ObjectMap<String, Class<?>> extensionToFormat = new ObjectMap<String, Class<?>>();
     
@@ -124,13 +129,25 @@ public class GDXAudio implements AudioEngine {
 
         try {
             findPaths();
-            ALC.create();
+            device = alcOpenDevice((ByteBuffer)null);
         } catch (Exception ex) {
             noDevice = true;
             ex.printStackTrace();
             return;
         }
-
+        ALCCapabilities deviceCapabilities = ALC.createCapabilities(device);
+        context = alcCreateContext(device, (IntBuffer)null);
+        if (context == 0L) {
+            alcCloseDevice(device);
+            noDevice = true;
+            return;
+        }
+        if (!alcMakeContextCurrent(context)) {
+            noDevice = true;
+            return;
+        }
+        AL.createCapabilities(deviceCapabilities);
+        alGetError();
         allSources = new IntArray( false, simultaneousSources );
         for (int ii = 0; ii < simultaneousSources; ii++) {
             int sourceId = AL10.alGenSources();
