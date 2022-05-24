@@ -117,7 +117,8 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 		if (config.title == null) config.title = listener.getClass().getSimpleName();
 
 		Gdx.app = this;
-		Gdx.audio = createAudio(config);
+		this.audio = createAudio(config);
+		Gdx.audio = this.audio;
 		this.files = Gdx.files = createFiles();
 		this.net = Gdx.net = new Lwjgl3Net(config);
 		this.clipboard = new Lwjgl3Clipboard();
@@ -144,7 +145,7 @@ public class Lwjgl3Application implements Lwjgl3ApplicationBase {
 		Array<Lwjgl3Window> closedWindows = new Array<Lwjgl3Window>();
 		while (running && windows.size > 0) {
 			// FIXME put it on a separate thread
-			if(audio!=null)audio.update();
+			audio.update();
 
 			boolean haveWindowsRendered = false;
 			closedWindows.clear();

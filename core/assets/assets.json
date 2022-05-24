@@ -32,8 +32,8 @@
             "pan"        : 1,
             "pitch"      : 1,
             "sources" : [
-                "Dodge.mp3",
-                "Failure.mp3"
+                "Dodge.wav",
+                "Failure.ogg"
             ]
         }
     },

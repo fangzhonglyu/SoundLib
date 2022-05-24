@@ -26,13 +26,13 @@ import edu.cornell.gdiac.audio.*;
 import edu.cornell.gdiac.backend.audio.*;
 import lwjgl3.LWJGLUtil;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.system.Library;
 import org.lwjgl.system.Platform;
 import org.lwjgl.openal.*;
 
 import java.lang.reflect.Method;
 import java.nio.*;
 
+import static org.lwjgl.openal.AL10.AL_BUFFERS_QUEUED;
 import static org.lwjgl.openal.AL10.alGetError;
 import static org.lwjgl.openal.ALC10.*;
 import static org.lwjgl.openal.ALC10.alcMakeContextCurrent;
@@ -135,6 +135,7 @@ public class GDXAudio implements AudioEngine {
             ex.printStackTrace();
             return;
         }
+
         ALCCapabilities deviceCapabilities = ALC.createCapabilities(device);
         context = alcCreateContext(device, (IntBuffer)null);
         if (context == 0L) {
@@ -147,6 +148,7 @@ public class GDXAudio implements AudioEngine {
             return;
         }
         AL.createCapabilities(deviceCapabilities);
+
         alGetError();
         allSources = new IntArray( false, simultaneousSources );
         for (int ii = 0; ii < simultaneousSources; ii++) {
@@ -160,7 +162,9 @@ public class GDXAudio implements AudioEngine {
                 indexToSource.put( allSources.size, sourceId );
                 allSources.add( sourceId );
             }
+
         }
+
 
         buffers = new OpenALBuffer[simultaneousSources];
         recentIndex = simultaneousSources - 1;
@@ -240,7 +244,7 @@ public class GDXAudio implements AudioEngine {
         sourceToIndex.clear();
         indexToSource.clear();
         ALC.destroy();
-        //I have not found a replacement for that
+
         /*while (AL.isCreated()) {
             try {
                 Thread.sleep(10);
@@ -297,7 +301,7 @@ public class GDXAudio implements AudioEngine {
         Class<?> format = extensionToFormat.get(file.extension().toLowerCase());
         if (format == null) throw new GdxRuntimeException("Unknown file extension for sound: " + file);
         try {
-            return (AudioSource)format.getConstructor(new Class[] {FileHandle.class}).newInstance(file);
+            return (AudioSource)format.getConstructor(FileHandle.class).newInstance(file);
         } catch (Exception ex) {
             throw new GdxRuntimeException("Error creating " + format.getName() + " for file: " + file, ex);
         }
@@ -335,7 +339,7 @@ public class GDXAudio implements AudioEngine {
         Class<?> format = extensionToFormat.get(file.extension().toLowerCase());
         if (format == null) throw new GdxRuntimeException("Unknown file extension for sound: " + file);
         try {
-            AudioSource sample = (AudioSource)format.getConstructor(new Class[] {FileHandle.class}).newInstance(file);
+            AudioSource sample = (AudioSource)format.getConstructor(FileHandle.class).newInstance(file);
             return new SoundHandle(sample);
         } catch (Exception ex) {
             throw new GdxRuntimeException("Error creating " + format.getName() + " for file: " + file, ex);
@@ -403,7 +407,7 @@ public class GDXAudio implements AudioEngine {
         Class<?> format = extensionToFormat.get(file.extension().toLowerCase());
         if (format == null) throw new GdxRuntimeException("Unknown file extension for sound: " + file);
         try {
-            AudioSource sample = (AudioSource)format.getConstructor(new Class[] {FileHandle.class}).newInstance(file);
+            AudioSource sample = (AudioSource)format.getConstructor(FileHandle.class).newInstance(file);
             return new MusicHandle( sample );
         } catch (Exception ex) {
             throw new GdxRuntimeException("Error creating " + format.getName() + " for file: " + file, ex);
@@ -1143,6 +1147,7 @@ public class GDXAudio implements AudioEngine {
                     onCompletionListener.onCompletion( this, soundId );
                 }
             }
+            System.out.println("stopped");
         }
 
         /**
@@ -1153,6 +1158,7 @@ public class GDXAudio implements AudioEngine {
             for(IntMap.Entry<Long> entry : sourceToSound.entries()) {
                 pauseSource(entry.key);
             }
+            System.out.println("stopped");
         }
 
         /** 
@@ -1729,7 +1735,7 @@ public class GDXAudio implements AudioEngine {
             if (sourceId == -1) {
                 sourceId = obtainSource( this );
                 if (sourceId == -1) return;
-                
+
                 position = 0;
                 setSourceLoop( sourceId, false );
                 setPan( pan, volume );
@@ -1906,7 +1912,7 @@ public class GDXAudio implements AudioEngine {
             if (sourceId == -1) {
                 return;
             }
-            
+            System.out.println("pos set");
             boolean wasPlaying = isPlaying;
             isPlaying = false;
             AL10.alSourceStop( sourceId );
@@ -2475,7 +2481,7 @@ public class GDXAudio implements AudioEngine {
                     arriving[offset] = null;
                 }
                 
-                if (end && AL10.alGetSourcei( sourceId, AL10.AL_BUFFERS_QUEUED ) == 0) {
+                if (end && AL10.alGetSourcei( sourceId, AL_BUFFERS_QUEUED ) == 0) {
                     stop();
                     if (onTransitionListener != null) {
                         onTransitionListener.onCompletion( this, samples.get( samples.size - 1 ) );
@@ -2767,7 +2773,7 @@ public class GDXAudio implements AudioEngine {
             this.format = channels > 1 ? AL10.AL_FORMAT_STEREO16 : AL10.AL_FORMAT_MONO16;
             this.sampleRate = sampleRate;
             secondsPerBuffer = (float)bufferSize / bytesPerSample / channels / sampleRate;
-            tempBuffer = BufferUtils.createByteBuffer( bufferSize );
+            tempBuffer = BufferUtils.createByteBuffer(bufferSize);
             allocBuffers();
         }
 

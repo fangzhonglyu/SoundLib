@@ -139,7 +139,6 @@ public class GDXRoot extends ApplicationAdapter implements SoundBuffer.OnComplet
 		//System.out.println(manager.get("assets.json",JsonValue.class));
 
 		AudioEngine audio = (AudioEngine)Gdx.audio;
-		System.out.println("fdsafd");
 		sound1 = manager.getEntry("failurewav", SoundBuffer.class);
 		sound2 = manager.getEntry("failureogg", SoundBuffer.class);
 		sound3 = manager.getEntry("failuremp3", SoundBuffer.class);
@@ -165,6 +164,8 @@ public class GDXRoot extends ApplicationAdapter implements SoundBuffer.OnComplet
 		music3.setOnTransitionListener( this );
 		music1.setLooping( true );
 		music1.setLoopBehavior( true );
+		System.out.println("Duration :" + music1.getDuration());
+		music1.setVolume(1);
 		music1.play();
 
 		//sample = audio.newSource( Gdx.files.internal("Dodge.wav" ) );
