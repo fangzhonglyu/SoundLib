@@ -202,4 +202,19 @@ public interface SoundBuffer extends Sound {
      */
     public void setPosition(long soundId, float seconds);
 
+    /**
+     * Sets the effect that this music is played through
+     *
+     * @param effectId the id of the effect to play
+     * */
+    public void setEffect(long soundId,int effectId);
+
+    /**
+     * Removes the effect that this music is played through.
+     *
+     * @param effectId the id of the effect to remove
+     * */
+
+    public void removeEffect(long soundId,int effectId);
+
 }

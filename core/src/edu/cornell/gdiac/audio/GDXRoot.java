@@ -106,6 +106,8 @@ public class GDXRoot extends ApplicationAdapter implements SoundBuffer.OnComplet
 
 					 */
 					return true;
+				case Input.Keys.NUM_7:
+
 			}
 			return false;
 		}
@@ -139,6 +141,7 @@ public class GDXRoot extends ApplicationAdapter implements SoundBuffer.OnComplet
 		//System.out.println(manager.get("assets.json",JsonValue.class));
 
 		AudioEngine audio = (AudioEngine)Gdx.audio;
+		int reverb = audio.genEffect();
 		sound1 = manager.getEntry("failurewav", SoundBuffer.class);
 		sound2 = manager.getEntry("failureogg", SoundBuffer.class);
 		sound3 = manager.getEntry("failuremp3", SoundBuffer.class);
@@ -148,8 +151,7 @@ public class GDXRoot extends ApplicationAdapter implements SoundBuffer.OnComplet
 		music3 = audio.newMusic( Gdx.files.internal("Failure.mp3" ));
 		Gdx.input.setInputProcessor( new KeyHandler() );
 
-		//music1.addSource( audio.newSource( Gdx.files.internal("Failure.wav" ) ) );
-
+		//music1.addSource( audio.newSource( Gdx.files.internal("Failure.wav" ) ) )
 		System.out.println("Music 1 sample rate: "+music1.getSampleRate() );
 		System.out.println("Music Buffer 0 sample rate: "+music1.getSource(0).getSampleRate() );
 		System.out.println("Music Buffer 1 sample rate: "+music1.getSource(1).getSampleRate() );
@@ -166,7 +168,11 @@ public class GDXRoot extends ApplicationAdapter implements SoundBuffer.OnComplet
 		music1.setLoopBehavior( true );
 		System.out.println("Duration :" + music1.getDuration());
 		music1.setVolume(1);
+
 		music1.play();
+		music1.setEffect(reverb);
+
+
 
 		//sample = audio.newSource( Gdx.files.internal("Dodge.wav" ) );
 		device = audio.newAudioDevice( sample.getSampleRate(), sample.getChannels() == 1 );

@@ -197,6 +197,21 @@ public interface MusicBuffer extends Music {
      * @return the loop behavior of this music buffer.
      */
      public boolean getLoopBehavior();
+
+     /**
+      * Sets the effect that this music is played through
+      *
+      * @param effectId the id of the effect to play
+      * */
+     public void setEffect(int effectId);
+
+    /**
+     * Removes the effect that this music is played through.
+     *
+     * @param effectId the id of the effect to remove
+     * */
+
+     public void removeEffect(int effectId);
      
      
     // #mark Queue Management

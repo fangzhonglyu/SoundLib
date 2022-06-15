@@ -38,7 +38,12 @@ public interface AudioEngine extends Audio {
      * {@link MusicBuffer}, and {@link AudioDevice}.
      */
     public int getCapacity();
-    
+
+    /**
+     * Returns the id of the effect created according to the parameters
+     * */
+    public int genEffect();
+
     /**
      * Creates a new {#link AudioSource} from the given file.
      *
