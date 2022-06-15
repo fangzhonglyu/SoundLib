@@ -33,9 +33,11 @@ import org.lwjgl.openal.*;
 import java.lang.reflect.Method;
 import java.nio.*;
 
-import static org.lwjgl.openal.AL11.*;
-import static org.lwjgl.openal.ALC11.*;
+import static org.lwjgl.openal.AL10.*;
+import static org.lwjgl.openal.ALC10.*;
 import static org.lwjgl.openal.EXTEfx.*;
+import static org.lwjgl.openal.ALC10.alcMakeContextCurrent;
+import static org.lwjgl.openal.AL10.AL_BUFFERS_QUEUED;
 
 /**
  * This class is an implementation of the {@link Audio} interface using OpenAL.
@@ -168,10 +170,10 @@ public class GDXAudio implements AudioEngine {
         alGetError();
         allSources = new IntArray( false, simultaneousSources );
         for (int ii = 0; ii < simultaneousSources; ii++) {
-            int sourceId = AL11.alGenSources();
-            int errorCode = AL11.alGetError();
-            if (errorCode != AL11.AL_NO_ERROR) {
-                Gdx.app.error( "OpenAL", "Unable to allocated source: " + AL11.alGetString( errorCode ) );
+            int sourceId = AL10.alGenSources();
+            int errorCode = AL10.alGetError();
+            if (errorCode != AL10.AL_NO_ERROR) {
+                Gdx.app.error( "OpenAL", "Unable to allocated source: " + AL10.alGetString( errorCode ) );
                 ii = simultaneousSources;
             } else {
                 sourceToIndex.put( sourceId, allSources.size );
@@ -184,8 +186,8 @@ public class GDXAudio implements AudioEngine {
         /* Generate the auxilary slots*/
         for(int ii = 0; ii < numAuxSlots; ii++){
             int slotID = alGenAuxiliaryEffectSlots();
-            int errorCode = AL11.alGetError();
-            if (errorCode != AL11.AL_NO_ERROR) {
+            int errorCode = AL10.alGetError();
+            if (errorCode != AL10.AL_NO_ERROR) {
                 Gdx.app.error( "OpenAL", "Unable to allocated auxillary slot: "+ii);
                 break;
             }
@@ -204,12 +206,21 @@ public class GDXAudio implements AudioEngine {
         int effectId = alGenEffects();
         alGetError();
         if (alIsEffect(effectId)) {
+            /*
             alEffecti(effectId, AL_EFFECT_TYPE, AL_EFFECT_REVERB);
-            if (alGetError() != AL11.AL_NO_ERROR)
+            if (alGetError() != AL10.AL_NO_ERROR)
                 Gdx.app.error("OpenAL", "Unable to edit effect.");
             else {
-                alEffectf(effectId, AL_REVERB_DECAY_TIME, 5.0f);
+                alEffectf(effectId, AL_REVERB_DECAY_TIME, 15.0f);
+                alEffectf(effectId,AL_REVERB_GAIN,1f);
             }
+
+             */
+            alEffecti(effectId,AL_EFFECT_TYPE,AL_EFFECT_FLANGER);
+            if (alGetError() != AL_NO_ERROR)
+                System.out.println("Flanger effect not support\n");
+            else
+                alEffecti(effectId, AL_FLANGER_PHASE, 180);
 
         }
         return effectId;
@@ -347,11 +358,11 @@ public class GDXAudio implements AudioEngine {
 
         for (int ii = 0, n = allSources.size; ii < n; ii++) {
             int sourceId = allSources.get(ii);
-            int state = AL11.alGetSourcei(sourceId, AL11.AL_SOURCE_STATE);
-            if (state != AL11.AL_STOPPED) {
-                AL11.alSourceStop(sourceId);
+            int state = AL10.alGetSourcei(sourceId, AL10.AL_SOURCE_STATE);
+            if (state != AL10.AL_STOPPED) {
+                AL10.alSourceStop(sourceId);
             }
-            AL11.alDeleteSources(sourceId);
+            AL10.alDeleteSources(sourceId);
         }
         
         allSources.clear();
@@ -622,9 +633,9 @@ public class GDXAudio implements AudioEngine {
             globalPause = true;
             for(int ii = 0; ii < paused.length; ii++) {
                 int sourceId = indexToSource.get( ii, -1 );
-                if (getSourceState( sourceId ) == AL11.AL_PLAYING) {
+                if (getSourceState( sourceId ) == AL10.AL_PLAYING) {
                     paused[ii] = true;
-                    AL11.alSourcePause( sourceId );
+                    AL10.alSourcePause( sourceId );
                 } else {
                     paused[ii] = false;
                 }
@@ -644,7 +655,7 @@ public class GDXAudio implements AudioEngine {
             for(int ii = 0; ii < paused.length; ii++) {
                 if (paused[ii]) {
                     int sourceId = indexToSource.get( ii, -1 );
-                    AL11.alSourcePlay( sourceId );
+                    AL10.alSourcePlay( sourceId );
                     paused[ii] = false;
                 }
             }
@@ -703,8 +714,8 @@ public class GDXAudio implements AudioEngine {
             return;
         }
 
-        AL11.alSourceStop(sourceId);
-        AL11.alSourcei(sourceId, AL11.AL_BUFFER, 0);
+        AL10.alSourceStop(sourceId);
+        AL10.alSourcei(sourceId, AL10.AL_BUFFER, 0);
         int index = sourceToIndex.get(sourceId, -1);
         buffers[index] = null;
     }
@@ -718,8 +729,8 @@ public class GDXAudio implements AudioEngine {
      */
     public void stopSource(int sourceId) {
         if (sourceId != -1 && !noDevice) {
-            AL11.alSourceStop(sourceId);
-            AL11.alSourcei(sourceId, AL11.AL_BUFFER, 0);
+            AL10.alSourceStop(sourceId);
+            AL10.alSourcei(sourceId, AL10.AL_BUFFER, 0);
             buffers[sourceToIndex.get(sourceId,-1)] = null;
         }
     }
@@ -735,8 +746,8 @@ public class GDXAudio implements AudioEngine {
         if (sourceId != -1 && !noDevice) {
             if (globalPause) {
                 paused[sourceToIndex.get(sourceId, -1)] = true;
-            } else if (AL11.alGetSourcei(sourceId, AL11.AL_SOURCE_STATE) == AL11.AL_PLAYING) {
-                AL11.alSourcePause(sourceId);
+            } else if (AL10.alGetSourcei(sourceId, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING) {
+                AL10.alSourcePause(sourceId);
             }
         }
     }
@@ -752,8 +763,8 @@ public class GDXAudio implements AudioEngine {
         if (sourceId != -1 && !noDevice) {
             if (globalPause) {
                 paused[sourceToIndex.get(sourceId, -1)] = true;
-            } else if (AL11.alGetSourcei(sourceId, AL11.AL_SOURCE_STATE) == AL11.AL_PAUSED) {
-                AL11.alSourcePlay(sourceId);
+            } else if (AL10.alGetSourcei(sourceId, AL10.AL_SOURCE_STATE) == AL10.AL_PAUSED) {
+                AL10.alSourcePlay(sourceId);
             }
         }
     }
@@ -761,7 +772,7 @@ public class GDXAudio implements AudioEngine {
     /**
      * Returns the OpenAL state for a source.
      *
-     * This method returns AL11.AL_STOPPED if the source id is invalid.
+     * This method returns AL10.AL_STOPPED if the source id is invalid.
      *
      * @param sourceId  The OpenAL source
      *
@@ -769,9 +780,9 @@ public class GDXAudio implements AudioEngine {
      */
     public int getSourceState(int sourceId) {
         if (sourceId != -1 && !noDevice) {
-            return AL11.alGetSourcei(sourceId, AL11.AL_SOURCE_STATE);
+            return AL10.alGetSourcei(sourceId, AL10.AL_SOURCE_STATE);
         }
-        return AL11.AL_STOPPED;
+        return AL10.AL_STOPPED;
     }
 
     /**
@@ -785,7 +796,7 @@ public class GDXAudio implements AudioEngine {
      */
     public void setSourceGain(int sourceId, float gain) {
         if (sourceId != -1 && !noDevice) {
-            AL11.alSourcef(sourceId, AL11.AL_GAIN, gain);
+            AL10.alSourcef(sourceId, AL10.AL_GAIN, gain);
         }
     }
 
@@ -801,7 +812,7 @@ public class GDXAudio implements AudioEngine {
      */
     public float getSourceGain(int sourceId) {
         if (sourceId != -1 && !noDevice) {
-            return AL11.alGetSourcef(sourceId, AL11.AL_GAIN);
+            return AL10.alGetSourcef(sourceId, AL10.AL_GAIN);
         }
         return -1.0f;
     }
@@ -816,7 +827,7 @@ public class GDXAudio implements AudioEngine {
      */
     public void setSourceLoop(int sourceId, boolean loop) {
         if (sourceId != -1 && !noDevice) {
-            AL11.alSourcei(sourceId, AL11.AL_LOOPING, loop ? AL11.AL_TRUE : AL11.AL_FALSE);
+            AL10.alSourcei(sourceId, AL10.AL_LOOPING, loop ? AL10.AL_TRUE : AL10.AL_FALSE);
         }
     }
     
@@ -831,7 +842,7 @@ public class GDXAudio implements AudioEngine {
      */
     public boolean getSourceLoop(int sourceId) {
         if (sourceId != -1 && !noDevice) {
-            return AL11.alGetSourcei(sourceId, AL11.AL_LOOPING) == AL11.AL_TRUE;
+            return AL10.alGetSourcei(sourceId, AL10.AL_LOOPING) == AL10.AL_TRUE;
         }
         return false;
     }
@@ -847,7 +858,7 @@ public class GDXAudio implements AudioEngine {
      */
     public void setSourcePitch(int sourceId, float pitch) {
         if (sourceId != -1 && !noDevice) {
-            AL11.alSourcef(sourceId, AL11.AL_PITCH, pitch);
+            AL10.alSourcef(sourceId, AL10.AL_PITCH, pitch);
         }
     }
     
@@ -863,7 +874,7 @@ public class GDXAudio implements AudioEngine {
      */
     public float getSourcePitch(int sourceId) {
         if (sourceId != -1 && !noDevice) {
-            return AL11.alGetSourcef(sourceId, AL11.AL_PITCH);
+            return AL10.alGetSourcef(sourceId, AL10.AL_PITCH);
         }
         return 1.0f;
     }
@@ -879,7 +890,7 @@ public class GDXAudio implements AudioEngine {
      */
     public void setSourcePan(int sourceId, float pan) {
         if (sourceId != -1 && !noDevice) {
-            AL11.alSource3f(sourceId, AL11.AL_POSITION,
+            AL10.alSource3f(sourceId, AL10.AL_POSITION,
                             MathUtils.cos((pan - 1) * MathUtils.PI / 2), 0,
                             MathUtils.sin((pan + 1) * MathUtils.PI / 2));
         }
@@ -897,7 +908,7 @@ public class GDXAudio implements AudioEngine {
      */
     public float getSourcePan(int sourceId) {
         if (sourceId != -1 && !noDevice) {
-            AL11.alGetSourcef(sourceId, AL11.AL_POSITION, floatdata);
+            AL10.alGetSourcef(sourceId, AL10.AL_POSITION, floatdata);
             float x = (float)Math.acos(floatdata.get());
             floatdata.clear();
             return (2*x/MathUtils.PI)+1;
@@ -915,7 +926,7 @@ public class GDXAudio implements AudioEngine {
      */ 
     public void setSourceSecOffset(int sourceId, float seconds) {
         if (sourceId != -1 && !noDevice) {
-            AL11.alSourcef(sourceId, AL11.AL_SEC_OFFSET, seconds);
+            AL10.alSourcef(sourceId, AL11.AL_SEC_OFFSET, seconds);
         }
     }
 
@@ -930,7 +941,7 @@ public class GDXAudio implements AudioEngine {
      */
     public float getSourceSecOffset(int sourceId) {
         if (sourceId != -1 && !noDevice) {
-            return AL11.alGetSourcef(sourceId, AL11.AL_SEC_OFFSET);
+            return AL10.alGetSourcef(sourceId, AL11.AL_SEC_OFFSET);
         }
         return -1.0f;
     }
@@ -945,7 +956,7 @@ public class GDXAudio implements AudioEngine {
      */ 
     public void setSourceByteOffset(int sourceId, int offset) {
         if (sourceId != -1 && !noDevice) {
-            AL11.alSourcei(sourceId, AL11.AL_BYTE_OFFSET, offset);
+            AL10.alSourcei(sourceId, AL11.AL_BYTE_OFFSET, offset);
         }    
     }
 
@@ -960,7 +971,7 @@ public class GDXAudio implements AudioEngine {
      */
     public int getSourceByteOffset(int sourceId) {
         if (sourceId != -1 && !noDevice) {
-            return AL11.alGetSourcei(sourceId, AL11.AL_BYTE_OFFSET);
+            return AL10.alGetSourcei(sourceId, AL11.AL_BYTE_OFFSET);
         }
         return -1;
     }
@@ -1029,9 +1040,9 @@ public class GDXAudio implements AudioEngine {
             
             // Generate an OpenAL buffer
             if (!noDevice) {
-                bufferId = AL11.alGenBuffers();
-                int format = sample.getChannels() > 1 ? AL11.AL_FORMAT_STEREO16 : AL11.AL_FORMAT_MONO16;
-                AL11.alBufferData(bufferId, format, buffer.asShortBuffer(), sample.getSampleRate());
+                bufferId = AL10.alGenBuffers();
+                int format = sample.getChannels() > 1 ? AL10.AL_FORMAT_STEREO16 : AL10.AL_FORMAT_MONO16;
+                AL10.alBufferData(bufferId, format, buffer.asShortBuffer(), sample.getSampleRate());
             }
                         
             // Track simultaneous plays
@@ -1065,7 +1076,7 @@ public class GDXAudio implements AudioEngine {
             sourceToSound.clear();
             sample = null;
             
-            AL11.alDeleteBuffers(bufferId);
+            AL10.alDeleteBuffers(bufferId);
             bufferId = -1;
             
             onCompletionListener = null;
@@ -1110,13 +1121,13 @@ public class GDXAudio implements AudioEngine {
             sourceToSound.put(sourceId, soundId);
             soundToSource.put(soundId, sourceId);
             
-            AL11.alSourcei(sourceId, AL11.AL_BUFFER, bufferId);
-            AL11.alSourcei(sourceId, AL11.AL_LOOPING, AL11.AL_FALSE);
-            AL11.alSourcef(sourceId, AL11.AL_GAIN, volume);
+            AL10.alSourcei(sourceId, AL10.AL_BUFFER, bufferId);
+            AL10.alSourcei(sourceId, AL10.AL_LOOPING, AL10.AL_FALSE);
+            AL10.alSourcef(sourceId, AL10.AL_GAIN, volume);
             if (globalPause) {
                 paused[sourceToIndex.get(sourceId, -1)] = true;
             } else {
-                AL11.alSourcePlay( sourceId );
+                AL10.alSourcePlay( sourceId );
             }
             return soundId;
         }
@@ -1189,13 +1200,13 @@ public class GDXAudio implements AudioEngine {
             sourceToSound.put(sourceId, soundId);
             soundToSource.put(soundId, sourceId);
             
-            AL11.alSourcei(sourceId, AL11.AL_BUFFER, bufferId);
-            AL11.alSourcei(sourceId, AL11.AL_LOOPING, AL11.AL_TRUE);
-            AL11.alSourcef(sourceId, AL11.AL_GAIN, volume);
+            AL10.alSourcei(sourceId, AL10.AL_BUFFER, bufferId);
+            AL10.alSourcei(sourceId, AL10.AL_LOOPING, AL10.AL_TRUE);
+            AL10.alSourcef(sourceId, AL10.AL_GAIN, volume);
             if (globalPause) {
                 paused[sourceToIndex.get(sourceId, -1)] = true;
             } else {
-                AL11.alSourcePlay( sourceId );
+                AL10.alSourcePlay( sourceId );
             }
             return soundId;
         
@@ -1453,7 +1464,7 @@ public class GDXAudio implements AudioEngine {
         @Override
         public boolean isPlaying(long soundId) {
             Integer sourceId = soundToSource.get(soundId);
-            return getSourceState(sourceId != null ? sourceId : -1) == AL11.AL_PLAYING;
+            return getSourceState(sourceId != null ? sourceId : -1) == AL10.AL_PLAYING;
         }
 
         /**
@@ -1601,8 +1612,8 @@ public class GDXAudio implements AudioEngine {
          */
         @Override
         public void update(int sourceId) {
-            int state  = AL11.alGetSourcei(sourceId, AL11.AL_SOURCE_STATE);
-            if (state != AL11.AL_PLAYING && state != AL11.AL_PAUSED) {
+            int state  = AL10.alGetSourcei(sourceId, AL10.AL_SOURCE_STATE);
+            if (state != AL10.AL_PLAYING && state != AL10.AL_PAUSED) {
                 Long soundId = sourceToSound.get(sourceId);
                 if (soundId != null) {
                     stopSource(sourceId);
@@ -1732,7 +1743,7 @@ public class GDXAudio implements AudioEngine {
          */
         public MusicHandle(boolean isMono, int sampleRate) {
             super(null,null);
-            format = isMono ? AL11.AL_FORMAT_MONO16 : AL11.AL_FORMAT_STEREO16;
+            format = isMono ? AL10.AL_FORMAT_MONO16 : AL10.AL_FORMAT_STEREO16;
             this.sampleRate = sampleRate;
             samples = new Array<AudioSource>();
             streams = new Array<AudioStream>();
@@ -1773,9 +1784,9 @@ public class GDXAudio implements AudioEngine {
         private void allocBuffers() {
             if (allBuffers == null) {
                 allBuffers = BufferUtils.createIntBuffer( bufferCount );
-                AL11.alGenBuffers( allBuffers );
-                int errorCode = AL11.alGetError();
-                if (errorCode != AL11.AL_NO_ERROR) {
+                AL10.alGenBuffers( allBuffers );
+                int errorCode = AL10.alGetError();
+                if (errorCode != AL10.AL_NO_ERROR) {
                     throw new GdxRuntimeException( "Unable to allocate audio buffers. AL Error: " + errorCode );
                 }
                 bufferAvail = bufferCount;
@@ -1813,11 +1824,11 @@ public class GDXAudio implements AudioEngine {
                     break;
                 }
                 filled = true;
-                AL11.alSourceQueueBuffers( sourceId, bufferId );
+                AL10.alSourceQueueBuffers( sourceId, bufferId );
                 
-                int error = AL11.alGetError();
-                if (error != AL11.AL_NO_ERROR) {
-                    Gdx.app.error("OpenAL", "Music buffer "+bufferId+" could not be initialized: "+AL11.alGetString(error));
+                int error = AL10.alGetError();
+                if (error != AL10.AL_NO_ERROR) {
+                    Gdx.app.error("OpenAL", "Music buffer "+bufferId+" could not be initialized: "+AL10.alGetString(error));
                     stop();
                     return false;
                 }
@@ -1835,7 +1846,7 @@ public class GDXAudio implements AudioEngine {
         public void dispose() {
             stop();
             if (allBuffers != null) {
-                AL11.alDeleteBuffers( allBuffers );
+                AL10.alDeleteBuffers( allBuffers );
                 allBuffers = null;
             }
             
@@ -1875,10 +1886,11 @@ public class GDXAudio implements AudioEngine {
                 if (globalPause) {
                     paused[sourceToIndex.get(sourceId, -1)] = true;
                 } else {
+                    GDXAudio.this.setEffect(sourceId,effectId);
                     setSourceGain( sourceId, volume );
                     setSourcePitch( sourceId, pitch );
                     setSourcePan( sourceId, pan );
-                    AL11.alSourcePlay( sourceId );
+                    AL10.alSourcePlay( sourceId );
 
                 }
                 isPlaying = true;
@@ -2042,11 +2054,11 @@ public class GDXAudio implements AudioEngine {
             System.out.println("pos set");
             boolean wasPlaying = isPlaying;
             isPlaying = false;
-            AL11.alSourceStop( sourceId );
+            AL10.alSourceStop( sourceId );
             unqueueBuffers();
             
             // Determine the byte position we want
-            long bytesPerFrame = (format == AL11.AL_FORMAT_MONO16 ? bytesPerSample : 2*bytesPerSample);
+            long bytesPerFrame = (format == AL10.AL_FORMAT_MONO16 ? bytesPerSample : 2*bytesPerSample);
             long byteOffs = ((long)(seconds*sampleRate))*bytesPerFrame;
             
             // Find the sample that has that byte position
@@ -2070,12 +2082,12 @@ public class GDXAudio implements AudioEngine {
                     int bufferId = obtainBuffer();
                     tempBuffer.clear();
                     tempBuffer.put( tempBytes, 0, length ).flip();
-                    AL11.alBufferData( bufferId, format, tempBuffer, sampleRate );
-                    AL11.alSourceQueueBuffers( sourceId, bufferId );
+                    AL10.alBufferData( bufferId, format, tempBuffer, sampleRate );
+                    AL10.alSourceQueueBuffers( sourceId, bufferId );
                     
-                    int error = AL11.alGetError();
-                    if (error != AL11.AL_NO_ERROR) {
-                        Gdx.app.error("OpenAL", "Stream seek position failed: "+AL11.alGetString(error));
+                    int error = AL10.alGetError();
+                    if (error != AL10.AL_NO_ERROR) {
+                        Gdx.app.error("OpenAL", "Stream seek position failed: "+AL10.alGetString(error));
                         stop();
                     } else {
                         initBuffers();
@@ -2099,18 +2111,17 @@ public class GDXAudio implements AudioEngine {
             }
             
             if (wasPlaying) {
-                AL11.alSourcePlay( sourceId );
+                AL10.alSourcePlay( sourceId );
                 isPlaying = true;
             }
         }
 
         public void setEffect(int effectId){
-            if(!GDXAudio.this.setEffect(obtainSource(this), effectId))
-                System.out.println("effect not set properly");
+            this.effectId = effectId;
         }
 
-        public void removeEffect(int effectId){
-            GDXAudio.this.removeEffect(obtainSource(this),effectId);
+        public void removeEffect(){
+           this.effectId = AL_EFFECT_NULL;
         }
 
         /** 
@@ -2126,8 +2137,8 @@ public class GDXAudio implements AudioEngine {
          */ 
         @Override
         public synchronized float getPosition() {
-            long offset = renderedBytes + (sourceId != -1 ? AL11.alGetSourcei( sourceId, AL11.AL_BYTE_OFFSET) : 0);
-            long bytesPerFrame = (format == AL11.AL_FORMAT_MONO16 ? bytesPerSample : 2*bytesPerSample);
+            long offset = renderedBytes + (sourceId != -1 ? AL10.alGetSourcei( sourceId, AL11.AL_BYTE_OFFSET) : 0);
+            long bytesPerFrame = (format == AL10.AL_FORMAT_MONO16 ? bytesPerSample : 2*bytesPerSample);
             return offset/(float)(sampleRate*bytesPerFrame);
         }
 
@@ -2162,7 +2173,7 @@ public class GDXAudio implements AudioEngine {
          */
         @Override
         public synchronized boolean isMono() {
-            return format == AL11.AL_FORMAT_MONO16;
+            return format == AL10.AL_FORMAT_MONO16;
         }
 
         /**
@@ -2190,7 +2201,7 @@ public class GDXAudio implements AudioEngine {
             for(int ii = 0; ii < streams.size; ii++) {
                 totalBytes += streams.get(ii).getByteSize();
             }
-            return totalBytes/(float)(sampleRate*(format == AL11.AL_FORMAT_MONO16 ? bytesPerSample: 2*bytesPerSample));
+            return totalBytes/(float)(sampleRate*(format == AL10.AL_FORMAT_MONO16 ? bytesPerSample: 2*bytesPerSample));
         }
 
         /** 
@@ -2332,7 +2343,7 @@ public class GDXAudio implements AudioEngine {
         public synchronized void setSource(int pos, AudioSource source) {
             int nformat = 0x10003;
             if (source.getChannels() <= 2) {
-                nformat = source.getChannels() == 1 ? AL11.AL_FORMAT_MONO16 : AL11.AL_FORMAT_STEREO16;
+                nformat = source.getChannels() == 1 ? AL10.AL_FORMAT_MONO16 : AL10.AL_FORMAT_STEREO16;
             }
             if (source.getSampleRate() != sampleRate || format != nformat) {
                 throw new IllegalArgumentException("Source "+source+" does not match the format of this music buffer.");
@@ -2354,7 +2365,7 @@ public class GDXAudio implements AudioEngine {
         public synchronized void addSource(AudioSource source) {
             int nformat = 0x10003;
             if (source.getChannels() <= 2) {
-                nformat = source.getChannels() == 1 ? AL11.AL_FORMAT_MONO16 : AL11.AL_FORMAT_STEREO16;
+                nformat = source.getChannels() == 1 ? AL10.AL_FORMAT_MONO16 : AL10.AL_FORMAT_STEREO16;
             }
             if (source.getSampleRate() != sampleRate || format != nformat) {
                 throw new IllegalArgumentException("Source "+source+" does not match the format of this music buffer.");
@@ -2377,7 +2388,7 @@ public class GDXAudio implements AudioEngine {
         public synchronized void insertSource(int pos, AudioSource source) {
             int nformat = 0x10003;
             if (source.getChannels() <= 2) {
-                nformat = source.getChannels() == 1 ? AL11.AL_FORMAT_MONO16 : AL11.AL_FORMAT_STEREO16;
+                nformat = source.getChannels() == 1 ? AL10.AL_FORMAT_MONO16 : AL10.AL_FORMAT_STEREO16;
             }
             if (source.getSampleRate() != sampleRate || format != nformat) {
                 throw new IllegalArgumentException("Source "+source+" does not match the format of this music buffer.");
@@ -2464,7 +2475,7 @@ public class GDXAudio implements AudioEngine {
             if (sourceId != -1) {
                 wasPlaying = isPlaying;
                 isPlaying = false;
-                AL11.alSourceStop( sourceId );
+                AL10.alSourceStop( sourceId );
                 unqueueBuffers();
             }
             
@@ -2498,7 +2509,7 @@ public class GDXAudio implements AudioEngine {
                 }
         
                 if (wasPlaying) {
-                    AL11.alSourcePlay( sourceId );
+                    AL10.alSourcePlay( sourceId );
                     isPlaying = true;
                 }
             }
@@ -2526,7 +2537,7 @@ public class GDXAudio implements AudioEngine {
             if (sourceId != -1) {
                 wasPlaying = isPlaying;
                 isPlaying = false;
-                AL11.alSourceStop( sourceId );
+                AL10.alSourceStop( sourceId );
                 unqueueBuffers();
             }
             
@@ -2548,7 +2559,7 @@ public class GDXAudio implements AudioEngine {
                 }
                 
                 if (wasPlaying) {
-                    AL11.alSourcePlay( sourceId );
+                    AL10.alSourcePlay( sourceId );
                     isPlaying = true;
                 }
             }
@@ -2584,10 +2595,10 @@ public class GDXAudio implements AudioEngine {
         public synchronized void update(int sourceId) {
             if (sourceId != -1) {
                 boolean end = false;
-                int buffers = AL11.alGetSourcei( sourceId, AL11.AL_BUFFERS_PROCESSED );
+                int buffers = AL10.alGetSourcei( sourceId, AL10.AL_BUFFERS_PROCESSED );
                 while (buffers-- > 0) {
-                    int bufferId = AL11.alSourceUnqueueBuffers( sourceId );
-                    if (bufferId == AL11.AL_INVALID_VALUE) {
+                    int bufferId = AL10.alSourceUnqueueBuffers( sourceId );
+                    if (bufferId == AL10.AL_INVALID_VALUE) {
                         Gdx.app.error( "OpenAL", "Invalid buffer for music "+this );
                         return;
                     }
@@ -2599,7 +2610,7 @@ public class GDXAudio implements AudioEngine {
                     
                     if (!end) {
                         if (fill( bufferId )) {
-                            AL11.alSourceQueueBuffers( sourceId, bufferId );
+                            AL10.alSourceQueueBuffers( sourceId, bufferId );
                             if (onTransitionListener != null) {
                                 if (arriving[offset] != null) {
                                     if (leaving[offset] != null) {
@@ -2617,7 +2628,7 @@ public class GDXAudio implements AudioEngine {
                     arriving[offset] = null;
                 }
                 
-                if (end && AL11.alGetSourcei( sourceId, AL_BUFFERS_QUEUED ) == 0) {
+                if (end && AL10.alGetSourcei( sourceId, AL_BUFFERS_QUEUED ) == 0) {
                     stop();
                     if (onTransitionListener != null) {
                         onTransitionListener.onCompletion( this, samples.get( samples.size - 1 ) );
@@ -2625,10 +2636,10 @@ public class GDXAudio implements AudioEngine {
                     if (onCompletionListener != null) {
                         onCompletionListener.onCompletion( this );
                     }
-                } else if (isPlaying && AL11.alGetSourcei( sourceId, AL11.AL_SOURCE_STATE ) != AL11.AL_PLAYING) {
+                } else if (isPlaying && AL10.alGetSourcei( sourceId, AL10.AL_SOURCE_STATE ) != AL10.AL_PLAYING) {
                     if (!globalPause) {
                         // A buffer underflow will cause the source to stop.
-                        AL11.alSourcePlay( sourceId );
+                        AL10.alSourcePlay( sourceId );
                     }
                 }
             }
@@ -2658,7 +2669,7 @@ public class GDXAudio implements AudioEngine {
          */
         @Override
         public synchronized int getChannels() {
-            return format == AL11.AL_FORMAT_MONO16 ? 1 : 2;
+            return format == AL10.AL_FORMAT_MONO16 ? 1 : 2;
         }
 
         
@@ -2788,7 +2799,7 @@ public class GDXAudio implements AudioEngine {
             byteoffs[bufferID-bufferStart] = totalbytes + streams.get(position).getByteOffset();
 
             tempBuffer.put( tempBytes, 0, length ).flip();
-            AL11.alBufferData( bufferID, format, tempBuffer, sampleRate );
+            AL10.alBufferData( bufferID, format, tempBuffer, sampleRate );
             return true;
         }
 
@@ -2819,10 +2830,10 @@ public class GDXAudio implements AudioEngine {
          * Recovers any available buffers
          */
         private void unqueueBuffers() {
-            int buffers = AL11.alGetSourcei( sourceId, AL11.AL_BUFFERS_PROCESSED );
+            int buffers = AL10.alGetSourcei( sourceId, AL10.AL_BUFFERS_PROCESSED );
             while (buffers-- > 0) {
-                int bufferId = AL11.alSourceUnqueueBuffers( sourceId );
-                if (bufferId == AL11.AL_INVALID_VALUE) {
+                int bufferId = AL10.alSourceUnqueueBuffers( sourceId );
+                if (bufferId == AL10.AL_INVALID_VALUE) {
                     Gdx.app.error( "OpenAL", "Invalid buffer unqueued for music "+this );
                     return;
                 }
@@ -2906,7 +2917,7 @@ public class GDXAudio implements AudioEngine {
             this.bufferSize = bufferSize;
             this.bufferCount = bufferCount;
             bufferAvail = bufferCount;
-            this.format = channels > 1 ? AL11.AL_FORMAT_STEREO16 : AL11.AL_FORMAT_MONO16;
+            this.format = channels > 1 ? AL10.AL_FORMAT_STEREO16 : AL10.AL_FORMAT_MONO16;
             this.sampleRate = sampleRate;
             secondsPerBuffer = (float)bufferSize / bytesPerSample / channels / sampleRate;
             tempBuffer = BufferUtils.createByteBuffer(bufferSize);
@@ -2920,9 +2931,9 @@ public class GDXAudio implements AudioEngine {
             if (allBuffers == null) {
                 usedBuffers = new IntIntMap();
                 allBuffers = BufferUtils.createIntBuffer( bufferCount );
-                AL11.alGenBuffers( allBuffers );
-                int errorCode = AL11.alGetError();
-                if (errorCode != AL11.AL_NO_ERROR) {
+                AL10.alGenBuffers( allBuffers );
+                int errorCode = AL10.alGetError();
+                if (errorCode != AL10.AL_NO_ERROR) {
                     throw new GdxRuntimeException( "Unable to allocate audio buffers. AL Error: " + errorCode );
                 }
                 for(int ii = 0; ii < bufferCount; ii++) {
@@ -2959,7 +2970,7 @@ public class GDXAudio implements AudioEngine {
                 freeSource( sourceId );
                 sourceId = -1;
             }
-            AL11.alDeleteBuffers( allBuffers );
+            AL10.alDeleteBuffers( allBuffers );
             allBuffers = null;
         }
 
@@ -3024,7 +3035,7 @@ public class GDXAudio implements AudioEngine {
          */
         @Override
         public boolean isMono() {
-            return format == AL11.AL_FORMAT_MONO16;
+            return format == AL10.AL_FORMAT_MONO16;
         }
 
         /** 
@@ -3118,10 +3129,10 @@ public class GDXAudio implements AudioEngine {
         public void update(int sourceId) {
             synchronized (this) {
                 if (sourceId != -1 && sourceId == this.sourceId) {
-                    int buffers = AL11.alGetSourcei( sourceId, AL11.AL_BUFFERS_PROCESSED );
+                    int buffers = AL10.alGetSourcei( sourceId, AL10.AL_BUFFERS_PROCESSED );
                     while (buffers-- > 0) {
-                        int bufferId = AL11.alSourceUnqueueBuffers( sourceId );
-                        if (bufferId == AL11.AL_INVALID_VALUE) {
+                        int bufferId = AL10.alSourceUnqueueBuffers( sourceId );
+                        if (bufferId == AL10.AL_INVALID_VALUE) {
                             Gdx.app.error( "OpenAL", "Invalid buffer for music " + this );
                             return;
                         }
@@ -3211,7 +3222,7 @@ public class GDXAudio implements AudioEngine {
             synchronized (this) {
                 if (sourceId == -1) return 0;
                 int channels = getChannels();
-                long offset = renderedBytes + AL11.alGetSourcei( sourceId, AL11.AL_BYTE_OFFSET );
+                long offset = renderedBytes + AL10.alGetSourcei( sourceId, AL11.AL_BYTE_OFFSET );
                 return (float)offset/bytesPerSample/channels/sampleRate;
             }
         }
@@ -3249,8 +3260,8 @@ public class GDXAudio implements AudioEngine {
                     sourceId = obtainSource( this );
                     if (sourceId == -1) return;
                 
-                    AL11.alSourcei( sourceId, AL11.AL_LOOPING, AL11.AL_FALSE );
-                    AL11.alSourcef( sourceId, AL11.AL_GAIN, volume );
+                    AL10.alSourcei( sourceId, AL10.AL_LOOPING, AL10.AL_FALSE );
+                    AL10.alSourcef( sourceId, AL10.AL_GAIN, volume );
                 
                     // Fill and queue some the initial buffers
                     int written = fill(data, offset, length);
@@ -3260,7 +3271,7 @@ public class GDXAudio implements AudioEngine {
                     if (globalPause) {
                         paused[sourceToIndex.get(sourceId, -1)] = true;
                     } else {
-                        AL11.alSourcePlay( sourceId );
+                        AL10.alSourcePlay( sourceId );
                     }
                     isPlaying = true;
                 }
@@ -3272,11 +3283,11 @@ public class GDXAudio implements AudioEngine {
                     offset += written;
                 
                     // A buffer underflow will cause the source to stop.
-                    if (!isPlaying || getSourceState( sourceId ) != AL11.AL_PLAYING) {
+                    if (!isPlaying || getSourceState( sourceId ) != AL10.AL_PLAYING) {
                         if (globalPause) {
                             paused[sourceToIndex.get(sourceId, -1)] = true;
                         } else {
-                            AL11.alSourcePlay( sourceId );
+                            AL10.alSourcePlay( sourceId );
                         }
                         isPlaying = true;
                     }
@@ -3291,7 +3302,7 @@ public class GDXAudio implements AudioEngine {
          * @return the number of channels (1 for mono, 2 for stereo) of this audio device
          */
         private int getChannels() {
-            return format == AL11.AL_FORMAT_STEREO16 ? 2 : 1;
+            return format == AL10.AL_FORMAT_STEREO16 ? 2 : 1;
         }
 
         /**
@@ -3340,8 +3351,8 @@ public class GDXAudio implements AudioEngine {
                 int amount = Math.min( bufferSize, length-written );
                 tempBuffer.clear();
                 tempBuffer.put(data, offset, amount).flip();
-                AL11.alBufferData(bufferId, format, tempBuffer, sampleRate);
-                AL11.alSourceQueueBuffers(sourceId, bufferId);
+                AL10.alBufferData(bufferId, format, tempBuffer, sampleRate);
+                AL10.alSourceQueueBuffers(sourceId, bufferId);
                 written += amount;
                 offset  += amount;
             }

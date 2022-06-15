@@ -208,10 +208,9 @@ public interface MusicBuffer extends Music {
     /**
      * Removes the effect that this music is played through.
      *
-     * @param effectId the id of the effect to remove
      * */
 
-     public void removeEffect(int effectId);
+     public void removeEffect();
      
      
     // #mark Queue Management

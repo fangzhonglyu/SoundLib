@@ -168,9 +168,9 @@ public class GDXRoot extends ApplicationAdapter implements SoundBuffer.OnComplet
 		music1.setLoopBehavior( true );
 		System.out.println("Duration :" + music1.getDuration());
 		music1.setVolume(1);
-
-		music1.play();
 		music1.setEffect(reverb);
+		music1.play();
+
 
 
 
