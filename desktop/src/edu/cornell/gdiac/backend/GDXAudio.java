@@ -218,7 +218,7 @@ public class GDXAudio implements AudioEngine {
              */
             alEffecti(effectId,AL_EFFECT_TYPE,AL_EFFECT_FLANGER);
             if (alGetError() != AL_NO_ERROR)
-                System.out.println("Flanger effect not support\n");
+                System.out.println("Flanger effect not supporte'd\n");
             else
                 alEffecti(effectId, AL_FLANGER_PHASE, 180);
 
