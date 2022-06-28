@@ -40,11 +40,6 @@ public interface AudioEngine extends Audio {
     public int getCapacity();
 
     /**
-     * Returns the id of the effect created according to the parameters
-     * */
-    public int genEffect();
-
-    /**
      * Creates a new {#link AudioSource} from the given file.
      *
      * A sample is a music asset that is not explicitly associated with the audio engine. 
@@ -168,5 +163,4 @@ public interface AudioEngine extends Audio {
      * affected.
      */
     public void resume();
-
 }

@@ -96,10 +96,12 @@ public class GDXAudio implements AudioEngine {
     /** The attribute for SFX */
     private int[] attributes = new int[4];
 
+    /** The number of effect slots */
+    //TODO: Verify that this works
+    private final int numAuxSlots = 64;
+
     /** Stores the ids of the aux slots */
     private int[] auxiliaryEfxSlots;
-
-    //private IntArray effects;
     
     /**
      * Creates an audio engine with the default settings.
@@ -149,9 +151,7 @@ public class GDXAudio implements AudioEngine {
 
         ALCCapabilities deviceCapabilities = ALC.createCapabilities(device);
 
-        /* request 4 Auxillary slots */
-        int numAuxSlots = 4;
-        attributes[0] = ALC_MAX_AUXILIARY_SENDS;
+        attributes[0] = alcGetInteger(device,ALC_MAX_AUXILIARY_SENDS);
         attributes[1] = numAuxSlots;
 
         context = alcCreateContext(device, attributes);
@@ -164,7 +164,7 @@ public class GDXAudio implements AudioEngine {
             noDevice = true;
             return;
         }
-        //int aSends = alcGetInteger(context,ALC_MAX_AUXILIARY_SENDS);
+
         AL.createCapabilities(deviceCapabilities);
 
         alGetError();
@@ -202,28 +202,54 @@ public class GDXAudio implements AudioEngine {
         floatdata = BufferUtils.createFloatBuffer( 4 );
     }
 
-    public int genEffect(){
-        int effectId = alGenEffects();
-        alGetError();
-        if (alIsEffect(effectId)) {
-            /*
-            alEffecti(effectId, AL_EFFECT_TYPE, AL_EFFECT_REVERB);
-            if (alGetError() != AL10.AL_NO_ERROR)
-                Gdx.app.error("OpenAL", "Unable to edit effect.");
-            else {
-                alEffectf(effectId, AL_REVERB_DECAY_TIME, 15.0f);
-                alEffectf(effectId,AL_REVERB_GAIN,1f);
-            }
-
-             */
-            alEffecti(effectId,AL_EFFECT_TYPE,AL_EFFECT_FLANGER);
-            if (alGetError() != AL_NO_ERROR)
-                System.out.println("Flanger effect not supporte'd\n");
-            else
-                alEffecti(effectId, AL_FLANGER_PHASE, 180);
-
+    /**
+     * Put an effect into available effect slots
+     *
+     * @param effect the SoundEffect object to load
+     * @return whether the effect is successfully loaded
+     * */
+    public boolean loadEffect(SoundEffect effect){
+        int effectId = effect.getId();
+        if(!alIsEffect(effectId)){
+            Gdx.app.error( "OpenAL", "effect is corrupted");
+            return false;
         }
-        return effectId;
+
+        if (effect.slot != -1)
+            return true;
+
+        int selectedSlot = AL_EFFECTSLOT_NULL;
+
+        for(int slotId: auxiliaryEfxSlots) {
+            if (alGetAuxiliaryEffectSloti(slotId, AL_EFFECTSLOT_EFFECT) == AL_EFFECT_NULL) {
+                selectedSlot = slotId;
+                break;
+            }
+        }
+
+        if(selectedSlot == AL_EFFECT_NULL){
+            return false;
+        }
+
+        alAuxiliaryEffectSloti(selectedSlot,AL_EFFECTSLOT_EFFECT,effectId);
+        effect.slot = selectedSlot;
+
+        int erCode = alGetError();
+        if (erCode != AL_NO_ERROR) {
+            Gdx.app.error( "OpenAL", "Error! Code: "+erCode);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * This is a clean up method to kick all effects out and empty all effect slots
+     * */
+    public void EmptyEffectSlots(){
+        for(int slotId: auxiliaryEfxSlots) {
+            alAuxiliaryEffectSloti(slotId,AL_EFFECTSLOT_EFFECT,AL_EFFECT_NULL);
+        }
     }
 
     /**
@@ -231,72 +257,32 @@ public class GDXAudio implements AudioEngine {
      *
      * @return false if the set is not successful and true otherwise
      * */
-    public boolean setEffect(int sourceId, int effectId){
-        if(!(alIsEffect(effectId)&&alIsSource(sourceId))){
-            System.out.println("check failed");
+    public boolean setEffect(int sourceId, SoundEffect effect,int sendSlot){
+        if(!(alIsEffect(effect.getId())&&alIsSource(sourceId))){
+            Gdx.app.error( "OpenAL", "source or effect not valid");
             return false;
         }
-        int selectedSlot = AL_EFFECTSLOT_NULL;
 
-        //slot selection stuff
-        /*
-        for(int slotId: auxiliaryEfxSlots){
-            if(slotId!=AL_EFFECTSLOT_NULL&&alGetAuxiliaryEffectSloti(slotId,AL_EFFECTSLOT_EFFECT) == effectId){
-                selectedSlot = slotId;
-                break;
-            }
-        }
-        if(selectedSlot == AL_EFFECT_NULL){
-            for(int slotId: auxiliaryEfxSlots) {
-                if (slotId==AL_EFFECTSLOT_NULL||alGetAuxiliaryEffectSloti(slotId, AL_EFFECTSLOT_EFFECT) == AL_EFFECT_NULL) {
-                    selectedSlot = slotId;
-                    break;
-                }
-            }
+        if(effect.slot==-1){
+            if(!loadEffect(effect))
+                return false;
         }
 
-        if(selectedSlot == AL_EFFECT_NULL){
-            selectedSlot = auxiliaryEfxSlots[0];
-        }
-        int erCode = alGetError();
-        if (erCode != AL_NO_ERROR) {
-            System.out.println(erCode+" s'd'f jj  ");
-            //return false;
-        }
-
-         */
-        int filter = alGenFilters();
-        if (alGetError() == AL_NO_ERROR)
-            System.out.println("Generated a Filter\n");
-        if (alIsFilter(filter))
-        {
-            /* Set Filter type to Low-Pass and set parameters */
-            alFilteri(filter,AL_FILTER_TYPE,AL_FILTER_LOWPASS);
-            if (alGetError() != AL_NO_ERROR)
-                System.out.println("sadfdsf");
-            else
-            {
-                alFilterf(filter, AL_LOWPASS_GAIN, 0.5f);
-                alFilterf(filter, AL_LOWPASS_GAINHF, 0.5f);
-            }
-        }
-        selectedSlot = auxiliaryEfxSlots[0];
-        alAuxiliaryEffectSloti(selectedSlot,AL_EFFECTSLOT_EFFECT,effectId);
+        AL11.alSource3i(sourceId,AL_AUXILIARY_SEND_FILTER,effect.slot,sendSlot,AL_FILTER_NULL);
         int errCode = alGetError();
         if (errCode != AL_NO_ERROR) {
             System.out.println("Error:"+errCode);
             return false;
         }
-        AL11.alSource3i(sourceId,AL_AUXILIARY_SEND_FILTER,selectedSlot,0,filter);
-        System.out.println(alGetError());
-        return alGetError() == AL_NO_ERROR;
+
+        return true;
     }
 
-    public void removeEffect(int sourceId, int effectId){
-        if(!(alIsEffect(effectId)&&alIsSource(sourceId))){
+    public void removeEffect(int sourceId, SoundEffect effect, int sendSlot){
+        if(!(alIsEffect(effect.getId())&&alIsSource(sourceId))){
             return;
         }
-        alSourcei(sourceId,AL_AUXILIARY_SEND_FILTER,AL_EFFECTSLOT_NULL);
+        AL11.alSource3i(sourceId,AL_AUXILIARY_SEND_FILTER,AL_EFFECTSLOT_NULL,sendSlot,AL_FILTER_NULL);
     }
 
     private void findPaths() throws Exception {
@@ -1026,6 +1012,8 @@ public class GDXAudio implements AudioEngine {
         private IntMap<Long>     sourceToSound;
         /** The next logical sound id to use */
         private long nextSound = 0;
+        /***/
+        private LongMap<SoundEffect[]> soundtoEffect;
         
         /**
          * Creates a new sound handle from the given source
@@ -1120,6 +1108,7 @@ public class GDXAudio implements AudioEngine {
             long soundId = nextSound++;
             sourceToSound.put(sourceId, soundId);
             soundToSource.put(soundId, sourceId);
+            soundtoEffect.put(soundId,new SoundEffect[attributes[0]]);
             
             AL10.alSourcei(sourceId, AL10.AL_BUFFER, bufferId);
             AL10.alSourcei(sourceId, AL10.AL_LOOPING, AL10.AL_FALSE);
@@ -1199,6 +1188,7 @@ public class GDXAudio implements AudioEngine {
             long soundId = nextSound++;
             sourceToSound.put(sourceId, soundId);
             soundToSource.put(soundId, sourceId);
+            soundtoEffect.put(soundId,new SoundEffect[attributes[0]]);
             
             AL10.alSourcei(sourceId, AL10.AL_BUFFER, bufferId);
             AL10.alSourcei(sourceId, AL10.AL_LOOPING, AL10.AL_TRUE);
@@ -1251,6 +1241,7 @@ public class GDXAudio implements AudioEngine {
             }
             soundToSource.clear();
             sourceToSound.clear();
+            soundtoEffect.clear();
         }
 
         /** 
@@ -1268,6 +1259,7 @@ public class GDXAudio implements AudioEngine {
             if (sourceId != null ) {
                 stopSource( sourceId );
                 sourceToSound.remove(sourceId);
+                soundtoEffect.remove(soundId);
                 if (onCompletionListener != null) {
                     onCompletionListener.onCompletion( this, soundId );
                 }
@@ -1396,13 +1388,38 @@ public class GDXAudio implements AudioEngine {
             setSourceGain(id, volume);
         }
 
-        public void setEffect(long soundId, int effectId){
-            GDXAudio.this.setEffect(soundToSource.get(soundId), effectId);
-            System.out.println(soundToSource.get(soundId)+"asdfsdf"+effectId);
+        /**
+         * Add an effect to the sound instance
+         *
+         * @param soundId   The playback instance
+         * @param effect    The effect Object
+         * */
+        public void AddEffect(long soundId, SoundEffect effect){
+            SoundEffect[] sends = soundtoEffect.get(soundId);
+            for(int i = 0; i < sends.length; i++){
+                if(sends[i]==null){
+                    if(GDXAudio.this.setEffect(soundToSource.get(soundId), effect,i))
+                        sends[i] = effect;
+                    break;
+                }
+            }
         }
 
-        public void removeEffect(long soundId,int effectId){
-            GDXAudio.this.removeEffect(soundToSource.get(soundId),effectId);
+        /**
+         * Remove an effect from the sound instance
+         *
+         * @param soundId   The playback instance
+         * @param effect    The effect Object
+         * */
+        public void removeEffect(long soundId, SoundEffect effect){
+            SoundEffect[] sends = soundtoEffect.get(soundId);
+            for(int i = 0; i < sends.length; i++) {
+                if (sends[i] == effect) {
+                    GDXAudio.this.removeEffect(soundToSource.get(soundId), effect, i);
+                    sends[i] = null;
+                    break;
+                }
+            }
         }
 
         // #mark Sound Buffer API

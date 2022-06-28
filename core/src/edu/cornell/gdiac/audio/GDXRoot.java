@@ -141,7 +141,7 @@ public class GDXRoot extends ApplicationAdapter implements SoundBuffer.OnComplet
 		//System.out.println(manager.get("assets.json",JsonValue.class));
 
 		AudioEngine audio = (AudioEngine)Gdx.audio;
-		int reverb = audio.genEffect();
+
 		sound1 = manager.getEntry("failurewav", SoundBuffer.class);
 		sound2 = manager.getEntry("failureogg", SoundBuffer.class);
 		sound3 = manager.getEntry("failuremp3", SoundBuffer.class);
