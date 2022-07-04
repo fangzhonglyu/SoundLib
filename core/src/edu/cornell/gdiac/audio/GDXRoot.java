@@ -163,9 +163,11 @@ public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnComplet
 		music1.setVolume(1);
 		EffectFactory f = audio.getEffectFactory();
 		EffectFilter flanger = f.createFlanger();
-		EffectFilter echo = f.createEcho();
-		music1.addEffect(flanger);
-		music1.addEffect(echo);
+		EffectFilter chorus = f.createChorus();
+		EffectFilter com = f.createAutoWAH();
+		//music1.addEffect(flanger);
+		music1.addEffect(chorus);
+		//music1.addEffect(com);
 		music1.play();
 
 

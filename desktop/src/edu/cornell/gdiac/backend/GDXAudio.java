@@ -285,7 +285,7 @@ public class GDXAudio implements AudioEngine {
                 return false;
         }
 
-        AL11.alSource3i(sourceId,AL_AUXILIARY_SEND_FILTER,((Effect)effect).slot,sendSlot,AL_FILTER_NULL);
+        AL11.alSource3i(sourceId,AL_AUXILIARY_SEND_FILTER,auxiliaryEfxSlots[((Effect)effect).slot],sendSlot,AL_FILTER_NULL);
         int errCode = alGetError();
         if (errCode != AL_NO_ERROR) {
             System.out.println("Error:"+errCode);

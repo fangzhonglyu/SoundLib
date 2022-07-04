@@ -35,7 +35,7 @@ public class Effect implements edu.cornell.gdiac.audio.EffectFilter {
 
     public Effect(){
         id = alGenEffects();
-        engine.loadEffect(this);
+        //engine.loadEffect(this);
     }
 
     /**
