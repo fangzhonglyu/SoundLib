@@ -39,7 +39,7 @@ import edu.cornell.gdiac.audio.*;
  * objects.  However, it also requires {@link AssetParser} objects.  An asset parser
  * takes an JSON entry in the directory and instructs the appropriate loader how to
  * load that file.  This class has built in parsers for the classes {@link Texture}, 
- * {@link TextureRegion},  {@link BitmapFont}, {@link SoundBuffer}, {@link MusicBuffer}, 
+ * {@link TextureRegion},  {@link BitmapFont}, {@link SoundEffect}, {@link MusicQueue},
  * and {@link JsonValue}.
  *
  * If you wish to add custom assets, you need to add BOTH a custom {@link AssetLoader}
@@ -139,8 +139,8 @@ public class AssetDirectory extends AssetManager {
         setLoader( AudioSource.class, new AudioSourceLoader( resolver ) );
         setLoader( Sound.class, new SoundLoader( resolver ) );
         setLoader( Music.class, new MusicLoader( resolver ) );
-        setLoader( SoundBuffer.class, new SoundBufferLoader( resolver ) );
-        setLoader( MusicBuffer.class, new MusicBufferLoader( resolver ) );
+        setLoader( SoundEffect.class, new SoundBufferLoader( resolver ) );
+        setLoader( MusicQueue.class, new MusicBufferLoader( resolver ) );
 
         setLoader( Pixmap.class, new PixmapLoader( resolver ) );
         setLoader( Texture.class, new TextureLoader( resolver ) );
@@ -175,7 +175,7 @@ public class AssetDirectory extends AssetManager {
      * 
      * Each asset must have an associated {@link AssetParser} for this to work.
      * There are default parsers for the classes {@link Texture}, {@link TextureRegion},
-     * {@link BitmapFont}, {@link SoundBuffer}, {@link MusicBuffer}, {@link JsonValue}.
+     * {@link BitmapFont}, {@link SoundEffect}, {@link MusicQueue}, {@link JsonValue}.
      *
      * Any additional asset parsers should be added with the {@link #addParser} method. 
      */

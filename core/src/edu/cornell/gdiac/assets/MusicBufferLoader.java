@@ -20,23 +20,23 @@ import edu.cornell.gdiac.audio.*;
 import com.badlogic.gdx.utils.Array;
 
 /**
- * This class is an {@link AssetLoader} to load {@link SoundBuffer} assets.
+ * This class is an {@link AssetLoader} to load {@link SoundEffect} assets.
  *
  * All music buffers are named symbolically, since that may span multiple audio sources.
  * They are fully defined by their loader parameters.
  */
-public class MusicBufferLoader extends AsynchronousAssetLoader<MusicBuffer, MusicBufferLoader.MusicBufferParameters> {
+public class MusicBufferLoader extends AsynchronousAssetLoader<MusicQueue, MusicBufferLoader.MusicBufferParameters> {
     /** The asynchronously read MusicBuffer */
-    private MusicBuffer cachedBuffer;
+    private MusicQueue cachedBuffer;
     
     /**
-     * The definable parameters for a {@link SoundBuffer}.
+     * The definable parameters for a {@link SoundEffect}.
      * 
      * While a music buffer may be derived from an audio source, it can be empty so long
      * as the number of channels (mono/stereo) and sample rate is defined.  Set sampleRate
      * to -1 to use the sample rate of the first source.
      */ 
-    public static  class MusicBufferParameters extends AssetLoaderParameters<MusicBuffer> {
+    public static  class MusicBufferParameters extends AssetLoaderParameters<MusicQueue> {
         /** The sources pre-attached to this music buffer (may be empty) */
         public Array<String> sources;
         /** 
@@ -121,13 +121,13 @@ public class MusicBufferLoader extends AsynchronousAssetLoader<MusicBuffer, Musi
     }
 
     /** 
-     * Returns the {@link MusicBuffer} instance currently loaded by this loader.
+     * Returns the {@link MusicQueue} instance currently loaded by this loader.
      *
      * If nothing has been loaded, this returns {@code null}.
      *
-     * @return the {@link MusicBuffer} instance currently loaded by this loader.
+     * @return the {@link MusicQueue} instance currently loaded by this loader.
      */
-    protected MusicBuffer getLoadedMusic () {
+    protected MusicQueue getLoadedMusic () {
         return cachedBuffer;
     }
 
@@ -176,8 +176,8 @@ public class MusicBufferLoader extends AsynchronousAssetLoader<MusicBuffer, Musi
      * @param params    The parameters to use for loading the asset 
      */
     @Override
-    public MusicBuffer loadSync (AssetManager manager, String fileName, FileHandle file, MusicBufferParameters params) {
-        MusicBuffer music = cachedBuffer;
+    public MusicQueue loadSync (AssetManager manager, String fileName, FileHandle file, MusicBufferParameters params) {
+        MusicQueue music = cachedBuffer;
         cachedBuffer = null;
         return music;
     }

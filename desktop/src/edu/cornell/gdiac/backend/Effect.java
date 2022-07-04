@@ -7,9 +7,6 @@
 
 package edu.cornell.gdiac.backend;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.AudioDevice;
-
 import static org.lwjgl.openal.EXTEfx.*;
 
 /**
@@ -19,23 +16,26 @@ import static org.lwjgl.openal.EXTEfx.*;
  * Effects need to be disposed with {@link #dispose()}
  *
  * */
-public class SoundEffect {
+public class Effect implements edu.cornell.gdiac.audio.EffectFilter {
     /** The id of the effect in openAL engine*/
     private int id;
     /** The id of the auxiliary slot the effect is in*/
     public int slot = -1;
+
+    public static GDXAudio engine;
 
     /**
      * Dispose the sound effect and release its resources
      * */
     public void dispose(){
         if(slot != -1)
-            alAuxiliaryEffectSloti(slot,AL_EFFECTSLOT_EFFECT,AL_EFFECT_NULL);
+            engine.unloadEffect(slot);
         alDeleteEffects(id);
     }
 
-    public SoundEffect(){
+    public Effect(){
         id = alGenEffects();
+        engine.loadEffect(this);
     }
 
     /**

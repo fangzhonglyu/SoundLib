@@ -21,24 +21,24 @@ import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.audio.*;
 
 /**
- * This class is an {@link AssetLoader} to load {@link SoundBuffer} assets.
+ * This class is an {@link AssetLoader} to load {@link SoundEffect} assets.
  *
  * A sound buffer asset should be specified by filename:name where name is a unique
  * name for the buffer.
  */
-public class SoundBufferLoader extends AsynchronousAssetLoader<SoundBuffer, SoundBufferLoader.SoundBufferParameters> {
+public class SoundBufferLoader extends AsynchronousAssetLoader<SoundEffect, SoundBufferLoader.SoundBufferParameters> {
     /** A reference to the file handle resolver (inaccessible in parent class) */
     protected FileHandleResolver resolver;
     /** The asynchronously read SoundBuffer */
-    private SoundBuffer cachedBuffer;
+    private SoundEffect cachedBuffer;
 
     /**
-     * The definable parameters for a {@link SoundBuffer}.
+     * The definable parameters for a {@link SoundEffect}.
      * 
      * A sound buffer is derived from an audio source. It is simply an audio source
      * that is actively attached to the audio engine.
      */ 
-	static public class SoundBufferParameters extends AssetLoaderParameters<SoundBuffer> {
+	static public class SoundBufferParameters extends AssetLoaderParameters<SoundEffect> {
         /** The reference to the audio source in the asset manager */
         public String source;
 
@@ -70,13 +70,13 @@ public class SoundBufferLoader extends AsynchronousAssetLoader<SoundBuffer, Soun
     }
 
     /** 
-     * Returns the {@link SoundBuffer} instance currently loaded by this loader.
+     * Returns the {@link SoundEffect} instance currently loaded by this loader.
      *
      * If nothing has been loaded, this returns {@code null}.
      *
-     * @return the {@link SoundBuffer} instance currently loaded by this loader.
+     * @return the {@link SoundEffect} instance currently loaded by this loader.
      */
-    protected SoundBuffer getLoadedSound () {
+    protected SoundEffect getLoadedSound () {
         return cachedBuffer;
     }
 
@@ -109,8 +109,8 @@ public class SoundBufferLoader extends AsynchronousAssetLoader<SoundBuffer, Soun
      * @param params    The parameters to use for loading the asset 
      */
     @Override
-    public SoundBuffer loadSync (AssetManager manager, String fileName, FileHandle file, SoundBufferParameters params) {
-        SoundBuffer sound = cachedBuffer;
+    public SoundEffect loadSync (AssetManager manager, String fileName, FileHandle file, SoundBufferParameters params) {
+        SoundEffect sound = cachedBuffer;
         cachedBuffer = null;
         return sound;
     }

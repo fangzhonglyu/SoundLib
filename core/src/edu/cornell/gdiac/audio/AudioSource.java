@@ -20,7 +20,7 @@ import java.nio.ByteBuffer;
  *
  * Sometimes we just want the data for a sound or music asset without having to 
  * explicitly play it.  This is especially true when we are appending tracks to
- * a {@link MusicBuffer}.  This class allows us to decouple this relationship.
+ * a {@link MusicQueue}.  This class allows us to decouple this relationship.
  *
  * This class also provides the user with a lot of "header" information that is 
  * not available in the basic LibGDX asset classes.  This includes information
@@ -77,7 +77,7 @@ public interface AudioSource extends Disposable {
     /**
      * Returns a new {@link AudioStream} to stream this asset.
      *
-     * This is the interface used by {@link MusicBuffer} to stream music from
+     * This is the interface used by {@link MusicQueue} to stream music from
      * the file.  A sample may have multiple independent streams.  The will
      * all be distinct from one another.
      *

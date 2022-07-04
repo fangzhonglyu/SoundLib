@@ -18,7 +18,7 @@ import com.badlogic.gdx.files.FileHandle;
  *
  * As a subinterface of {@link Sound}, this supports pausing, resuming and so on, 
  * even on multiple simultaneous instances.  It also adds support for a callback
- * function (see {@link SoundBuffer.OnCompletionListener}) when an instance has
+ * function (see {@link SoundEffect.OnCompletionListener}) when an instance has
  * stopped playing.
  *
  * The audio data being play is fully loaded into memory, so this interface is
@@ -33,7 +33,7 @@ import com.badlogic.gdx.files.FileHandle;
  * interfaces be interacted with in the main application thread (for much the same
  * reason that OpenGL requires this).
  */
-public interface SoundBuffer extends Sound {
+public interface SoundEffect extends Sound {
 
     /**
      * The interface for a callback invoked as a sound instance is completed
@@ -50,7 +50,7 @@ public interface SoundBuffer extends Sound {
          * @param buffer    The sound buffer that finished playing
          * @param instance     The particular instance that has completed
          */
-        public abstract void onCompletion(SoundBuffer buffer, long instance);
+        public abstract void onCompletion(SoundEffect buffer, long instance);
     }
     
     /** 
@@ -207,14 +207,14 @@ public interface SoundBuffer extends Sound {
      *
      * @param effect the effect to add
      * */
-    public void addEffect(long soundId, SoundEffect effect);
+    public void addEffect(long soundId, EffectFilter effect);
 
     /**
      * Removes the effect that this music is played through.
      *
-     * @param effectId the id of the effect to remove
+     * @param effect the effect to remove
      * */
 
-    public void removeEffect(long soundId,int effectId);
+    public void removeEffect(long soundId, EffectFilter effect);
 
 }

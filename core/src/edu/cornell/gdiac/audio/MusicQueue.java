@@ -36,7 +36,7 @@ import com.badlogic.gdx.audio.Music;
  * interfaces be interacted with in the main application thread (for much the same
  * reason that OpenGL requires this).
  */
-public interface MusicBuffer extends Music {
+public interface MusicQueue extends Music {
 
     /**
      * The interface for a callback invoked as the music queue is processed.
@@ -62,7 +62,7 @@ public interface MusicBuffer extends Music {
          * @param buffer    The buffer that reached the end of the stream
          * @param source    The source that looped around
          */
-        public void onLoopback(MusicBuffer buffer, AudioSource source);
+        public void onLoopback(MusicQueue buffer, AudioSource source);
         /** 
          * Called when queue transitions from one source to another.
          *
@@ -74,7 +74,7 @@ public interface MusicBuffer extends Music {
          * @param source1   The previous source in the transition
          * @param source2   The current source in the transition
          */
-        public void onTransition(MusicBuffer buffer, AudioSource source1, AudioSource source2);
+        public void onTransition(MusicQueue buffer, AudioSource source1, AudioSource source2);
         /** 
          * Called when the end of a music stream is reached during playback.
          *
@@ -86,7 +86,7 @@ public interface MusicBuffer extends Music {
          * @param buffer    The buffer that reached the end of the stream
          * @param source    The last source processed by this stream
          */
-        public void onCompletion(MusicBuffer buffer, AudioSource source);
+        public void onCompletion(MusicQueue buffer, AudioSource source);
     }
     
     /** 
@@ -198,19 +198,19 @@ public interface MusicBuffer extends Music {
      */
      public boolean getLoopBehavior();
 
-     /**
-      * Sets the effect that this music is played through
-      *
-      * @param effectId the id of the effect to play
-      * */
-     public void setEffect(int effectId);
+    /**
+     * Add an effect to the music playback
+     *
+     * @param effect    The effect Object
+     * */
+    public void addEffect(EffectFilter effect);
 
     /**
-     * Removes the effect that this music is played through.
+     * Remove an effect from the sound instance
      *
+     * @param effect    The effect Object
      * */
-
-     public void removeEffect();
+    public void removeEffect(EffectFilter effect);
      
      
     // #mark Queue Management

@@ -1,34 +1,27 @@
 package edu.cornell.gdiac.audio;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.AudioDevice;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.BufferUtils;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Timer;
 import edu.cornell.gdiac.assets.*;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-
-public class GDXRoot extends ApplicationAdapter implements SoundBuffer.OnCompletionListener, Music.OnCompletionListener, MusicBuffer.OnTransitionListener {
+public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnCompletionListener, Music.OnCompletionListener, MusicQueue.OnTransitionListener {
 	SpriteBatch batch;
 	Texture img;
 	TextureRegion reg;
 
-	SoundBuffer sound1;
-	SoundBuffer sound2;
-	SoundBuffer sound3;
+	SoundEffect sound1;
+	SoundEffect sound2;
+	SoundEffect sound3;
 
-	MusicBuffer music1;
-	MusicBuffer music2;
-	MusicBuffer music3;
+	MusicQueue music1;
+	MusicQueue music2;
+	MusicQueue music3;
 
 	AudioDevice device;
 	AudioSource sample;
@@ -142,11 +135,11 @@ public class GDXRoot extends ApplicationAdapter implements SoundBuffer.OnComplet
 
 		AudioEngine audio = (AudioEngine)Gdx.audio;
 
-		sound1 = manager.getEntry("failurewav", SoundBuffer.class);
-		sound2 = manager.getEntry("failureogg", SoundBuffer.class);
-		sound3 = manager.getEntry("failuremp3", SoundBuffer.class);
-		music1 = manager.getEntry("twofer", MusicBuffer.class);
-		//music1 = audio.newMusic( Gdx.files.internal("Dodge.wav" ));
+		sound1 = manager.getEntry("failurewav", SoundEffect.class);
+		sound2 = manager.getEntry("failureogg", SoundEffect.class);
+		sound3 = manager.getEntry("failuremp3", SoundEffect.class);
+		//music1 = manager.getEntry("twofer", MusicQueue.class);
+		music1 = audio.newMusic( Gdx.files.internal("Dodge.wav" ));
 		music2 = audio.newMusic( Gdx.files.internal("Failure.ogg" ));
 		music3 = audio.newMusic( Gdx.files.internal("Failure.mp3" ));
 		Gdx.input.setInputProcessor( new KeyHandler() );
@@ -154,7 +147,7 @@ public class GDXRoot extends ApplicationAdapter implements SoundBuffer.OnComplet
 		//music1.addSource( audio.newSource( Gdx.files.internal("Failure.wav" ) ) )
 		System.out.println("Music 1 sample rate: "+music1.getSampleRate() );
 		System.out.println("Music Buffer 0 sample rate: "+music1.getSource(0).getSampleRate() );
-		System.out.println("Music Buffer 1 sample rate: "+music1.getSource(1).getSampleRate() );
+		//System.out.println("Music Buffer 1 sample rate: "+music1.getSource(1).getSampleRate() );
 		sound1.setOnCompletionListener( this );
 		sound2.setOnCompletionListener( this );
 		sound3.setOnCompletionListener( this );
@@ -168,7 +161,11 @@ public class GDXRoot extends ApplicationAdapter implements SoundBuffer.OnComplet
 		music1.setLoopBehavior( true );
 		System.out.println("Duration :" + music1.getDuration());
 		music1.setVolume(1);
-		music1.setEffect(reverb);
+		EffectFactory f = audio.getEffectFactory();
+		EffectFilter flanger = f.createFlanger();
+		EffectFilter echo = f.createEcho();
+		music1.addEffect(flanger);
+		music1.addEffect(echo);
 		music1.play();
 
 
@@ -229,7 +226,7 @@ public class GDXRoot extends ApplicationAdapter implements SoundBuffer.OnComplet
 		System.out.println("Resuming!");
 	}
 
-	public void onCompletion(SoundBuffer buffer, long sound) {
+	public void onCompletion(SoundEffect buffer, long sound) {
 		System.out.println("Finished sound "+sound+" of "+buffer.getFile());
 	}
 
@@ -239,17 +236,17 @@ public class GDXRoot extends ApplicationAdapter implements SoundBuffer.OnComplet
 	}
 
 	@Override
-	public void onLoopback(MusicBuffer buffer, AudioSource sample) {
+	public void onLoopback(MusicQueue buffer, AudioSource sample) {
 		System.out.println("Looping back in music "+buffer+" on sample "+sample);
 	}
 
 	@Override
-	public void onTransition(MusicBuffer buffer, AudioSource sample1, AudioSource sample2) {
+	public void onTransition(MusicQueue buffer, AudioSource sample1, AudioSource sample2) {
 		System.out.println("Transitioning in music "+buffer+" from sample "+sample1+" to sample "+sample2);
 	}
 
 	@Override
-	public void onCompletion(MusicBuffer buffer, AudioSource sample) {
+	public void onCompletion(MusicQueue buffer, AudioSource sample) {
 		System.out.println("Completing music "+buffer+" with sample "+sample);
 	}
 

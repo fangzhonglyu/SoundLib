@@ -157,7 +157,7 @@ public class Mp3Source implements AudioSource {
     /**
      * Returns a new {@link AudioStream} to stream this asset.
      *
-     * This is the interface used by {@link MusicBuffer} to stream music from
+     * This is the interface used by {@link MusicQueue} to stream music from
      * the file.  A sample may have multiple independent streams.  The will
      * all be distinct from one another.
      *

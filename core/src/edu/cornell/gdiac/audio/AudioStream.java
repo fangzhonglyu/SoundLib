@@ -17,7 +17,7 @@ import com.badlogic.gdx.audio.AudioDevice;
  *
  * This class is used to read data from a sound asset, without necessarily playing. One
  * use case is to provide input to a {@link AudioDevice} object.  Another is to append
- * additional music streams to a {@link MusicBuffer} object.
+ * additional music streams to a {@link MusicQueue} object.
  *
  * Decoder streams are read-forward. Each time you read data from them, they advance the
  * {@link #getByteOffset} and {@link #getSampleOffset}. To start reading data from the

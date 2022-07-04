@@ -20,10 +20,10 @@ import com.badlogic.gdx.backends.lwjgl3.audio.OpenALAudioDevice;
 import com.badlogic.gdx.backends.lwjgl3.audio.OpenALMusic;
 import com.badlogic.gdx.backends.lwjgl3.audio.OpenALSound;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.*;
 import edu.cornell.gdiac.audio.*;
+import edu.cornell.gdiac.audio.EffectFactory;
 import edu.cornell.gdiac.backend.audio.*;
 import lwjgl3.LWJGLUtil;
 import org.lwjgl.BufferUtils;
@@ -32,6 +32,7 @@ import org.lwjgl.openal.*;
 
 import java.lang.reflect.Method;
 import java.nio.*;
+import java.util.ArrayList;
 
 import static org.lwjgl.openal.AL10.*;
 import static org.lwjgl.openal.ALC10.*;
@@ -102,6 +103,7 @@ public class GDXAudio implements AudioEngine {
 
     /** Stores the ids of the aux slots */
     private int[] auxiliaryEfxSlots;
+    private boolean[] slotInUse;
     
     /**
      * Creates an audio engine with the default settings.
@@ -182,7 +184,10 @@ public class GDXAudio implements AudioEngine {
             }
         }
 
+        Effect.engine = this;
         auxiliaryEfxSlots = new int[numAuxSlots];
+        slotInUse = new boolean[numAuxSlots];
+
         /* Generate the auxilary slots*/
         for(int ii = 0; ii < numAuxSlots; ii++){
             int slotID = alGenAuxiliaryEffectSlots();
@@ -208,31 +213,31 @@ public class GDXAudio implements AudioEngine {
      * @param effect the SoundEffect object to load
      * @return whether the effect is successfully loaded
      * */
-    public boolean loadEffect(SoundEffect effect){
-        int effectId = effect.getId();
+    public boolean loadEffect(EffectFilter effect){
+        int effectId = ((Effect)effect).getId();
         if(!alIsEffect(effectId)){
             Gdx.app.error( "OpenAL", "effect is corrupted");
             return false;
         }
 
-        if (effect.slot != -1)
+        if (((Effect)effect).slot != -1)
             return true;
 
-        int selectedSlot = AL_EFFECTSLOT_NULL;
+        int selectedSlotI = -1;
 
-        for(int slotId: auxiliaryEfxSlots) {
-            if (alGetAuxiliaryEffectSloti(slotId, AL_EFFECTSLOT_EFFECT) == AL_EFFECT_NULL) {
-                selectedSlot = slotId;
+        for(int i = 0; i < auxiliaryEfxSlots.length; i++) {
+            if (!slotInUse[i]) {
+                selectedSlotI = i;
                 break;
             }
         }
 
-        if(selectedSlot == AL_EFFECT_NULL){
+        if(selectedSlotI == -1){
             return false;
         }
 
-        alAuxiliaryEffectSloti(selectedSlot,AL_EFFECTSLOT_EFFECT,effectId);
-        effect.slot = selectedSlot;
+        alAuxiliaryEffectSloti(auxiliaryEfxSlots[selectedSlotI],AL_EFFECTSLOT_EFFECT,effectId);
+        ((Effect)effect).slot = selectedSlotI;
 
         int erCode = alGetError();
         if (erCode != AL_NO_ERROR) {
@@ -244,12 +249,24 @@ public class GDXAudio implements AudioEngine {
     }
 
     /**
+     * Remove effects on a slot
+     *
+     * @param slot the index of the slot in {@link #auxiliaryEfxSlots}
+     * @return whether the effect is successfully loaded
+     * */
+    public void unloadEffect(int slot){
+        alAuxiliaryEffectSloti(auxiliaryEfxSlots[slot],AL_EFFECTSLOT_EFFECT,AL_EFFECT_NULL);
+        slotInUse[slot]=false;
+    }
+
+    /**
      * This is a clean up method to kick all effects out and empty all effect slots
      * */
     public void EmptyEffectSlots(){
         for(int slotId: auxiliaryEfxSlots) {
             alAuxiliaryEffectSloti(slotId,AL_EFFECTSLOT_EFFECT,AL_EFFECT_NULL);
         }
+        slotInUse = new boolean[slotInUse.length];
     }
 
     /**
@@ -257,18 +274,18 @@ public class GDXAudio implements AudioEngine {
      *
      * @return false if the set is not successful and true otherwise
      * */
-    public boolean setEffect(int sourceId, SoundEffect effect,int sendSlot){
-        if(!(alIsEffect(effect.getId())&&alIsSource(sourceId))){
+    public boolean setEffect(int sourceId, EffectFilter effect, int sendSlot){
+        if(!(alIsEffect(((Effect)effect).getId())&&alIsSource(sourceId))){
             Gdx.app.error( "OpenAL", "source or effect not valid");
             return false;
         }
 
-        if(effect.slot==-1){
+        if(((Effect)effect).slot==-1){
             if(!loadEffect(effect))
                 return false;
         }
 
-        AL11.alSource3i(sourceId,AL_AUXILIARY_SEND_FILTER,effect.slot,sendSlot,AL_FILTER_NULL);
+        AL11.alSource3i(sourceId,AL_AUXILIARY_SEND_FILTER,((Effect)effect).slot,sendSlot,AL_FILTER_NULL);
         int errCode = alGetError();
         if (errCode != AL_NO_ERROR) {
             System.out.println("Error:"+errCode);
@@ -278,8 +295,8 @@ public class GDXAudio implements AudioEngine {
         return true;
     }
 
-    public void removeEffect(int sourceId, SoundEffect effect, int sendSlot){
-        if(!(alIsEffect(effect.getId())&&alIsSource(sourceId))){
+    public void removeEffect(int sourceId, int sendSlot){
+        if(alIsSource(sourceId)){
             return;
         }
         AL11.alSource3i(sourceId,AL_AUXILIARY_SEND_FILTER,AL_EFFECTSLOT_NULL,sendSlot,AL_FILTER_NULL);
@@ -389,7 +406,7 @@ public class GDXAudio implements AudioEngine {
      *
      * A sample is a music asset that is not explicitly associated with the audio engine.
      * You can read data directly and pass it to an {@link AudioDevice}. Alternatively,
-     * you can queue the sample on to a {@link MusicBuffer} to support gapless
+     * you can queue the sample on to a {@link MusicQueue} to support gapless
      * transitions in your music.
      *
      * The currently supported formats are WAV, MP3 and OGG.
@@ -419,7 +436,7 @@ public class GDXAudio implements AudioEngine {
     }
 
     /**
-     * Creates a new {@link SoundBuffer} which to play back audio effects.
+     * Creates a new {@link SoundEffect} which to play back audio effects.
      *
      * Sound buffers should be used for low latency effects such as gun shots or
      * explosions. The audio data is retrieved from the file specified and loaded
@@ -429,7 +446,7 @@ public class GDXAudio implements AudioEngine {
      * The currently supported formats are WAV, MP3 and OGG.
      *
      * The sound buffer should be disposed if it is no longer used via the
-     * {@link SoundBuffer#dispose()} method.
+     * {@link SoundEffect#dispose()} method.
      *
      * @param file The sound asset
      *
@@ -458,7 +475,7 @@ public class GDXAudio implements AudioEngine {
     }
 
     /**
-     * Creates a new {@link SoundBuffer} which to play back audio effects.
+     * Creates a new {@link SoundEffect} which to play back audio effects.
      *
      * Sound buffers should be used for low latency effects such as gun shots or 
      * explosions. The audio data is retrieved from the file specified and loaded
@@ -468,13 +485,13 @@ public class GDXAudio implements AudioEngine {
      * The currently supported formats are WAV, MP3 and OGG.
      *
      * The sound buffer should be disposed if it is no longer used via the 
-     * {@link SoundBuffer#dispose()} method.
+     * {@link SoundEffect#dispose()} method.
      *
      * @param source    The sound asset
      *
      * @return a new {#link SoundBuffer} from the given audio source.
      */
-    public SoundBuffer newSoundBuffer(AudioSource source) {
+    public SoundEffect newSoundBuffer(AudioSource source) {
         if (noDevice) {
             return null;
         }
@@ -483,7 +500,7 @@ public class GDXAudio implements AudioEngine {
     }
     
     /**
-     * Creates a new {@link MusicBuffer} to stream from the given file.
+     * Creates a new {@link MusicQueue} to stream from the given file.
      *
      * A music buffer streams music from the sound asset without fully loading it into
      * memory. This is idea for long running music. The currently supported formats are
@@ -526,7 +543,7 @@ public class GDXAudio implements AudioEngine {
     }
 
     /**
-     * Creates a new {@link MusicBuffer} with the given properties.
+     * Creates a new {@link MusicQueue} with the given properties.
      *
      * A music buffer streams music from the sound asset without fully loading it into
      * memory. This is idea for long running music. The currently supported formats are
@@ -549,7 +566,7 @@ public class GDXAudio implements AudioEngine {
      * @return a new {#link MusicBuffer} with the given properties.
      */
     @Override
-    public MusicBuffer newMusicBuffer(boolean isMono, int sampleRate) {
+    public MusicQueue newMusicBuffer(boolean isMono, int sampleRate) {
         if (noDevice) {
             return null;
         }
@@ -601,8 +618,8 @@ public class GDXAudio implements AudioEngine {
     /**
      * Returns the number of simultaneous sound sources supported by this audio engine.
      *
-     * Possible simultaneous sound sources include instances of {@link SoundBuffer},
-     * {@link MusicBuffer}, and {@link AudioDevice}.
+     * Possible simultaneous sound sources include instances of {@link SoundEffect},
+     * {@link MusicQueue}, and {@link AudioDevice}.
      */
     public int getCapacity() {
         return buffers.length;
@@ -648,7 +665,12 @@ public class GDXAudio implements AudioEngine {
         }
         globalPause = false;
     }
-    
+
+    @Override
+    public EffectFactory getEffectFactory() {
+        return new edu.cornell.gdiac.backend.EffectFactory();
+    }
+
     // #mark OpenAL Source Controls
     /**
      * Returns (and claims) a new OpenAL source for this buffer.
@@ -998,7 +1020,7 @@ public class GDXAudio implements AudioEngine {
      * A sound handle will release all locks on OpenAL sources when it is not playing.  
      * However, it is still best to dispose of it when it is no longer being used.
      */
-    private class SoundHandle extends OpenALSound implements SoundBuffer, OpenALBuffer {
+    private class SoundHandle extends OpenALSound implements SoundEffect, OpenALBuffer {
         /** The preallocated OpenAL buffer */
         private int bufferId = -1;
         /** The associated audio source */
@@ -1013,7 +1035,7 @@ public class GDXAudio implements AudioEngine {
         /** The next logical sound id to use */
         private long nextSound = 0;
         /***/
-        private LongMap<SoundEffect[]> soundtoEffect;
+        private LongMap<EffectFilter[]> soundtoEffect;
         
         /**
          * Creates a new sound handle from the given source
@@ -1036,6 +1058,7 @@ public class GDXAudio implements AudioEngine {
             // Track simultaneous plays
             soundToSource = new LongMap<Integer>();
             sourceToSound = new IntMap<Long>();
+            soundtoEffect = new LongMap<>();
         }
         
         /**
@@ -1108,7 +1131,7 @@ public class GDXAudio implements AudioEngine {
             long soundId = nextSound++;
             sourceToSound.put(sourceId, soundId);
             soundToSource.put(soundId, sourceId);
-            soundtoEffect.put(soundId,new SoundEffect[attributes[0]]);
+            soundtoEffect.put(soundId,new EffectFilter[attributes[0]]);
             
             AL10.alSourcei(sourceId, AL10.AL_BUFFER, bufferId);
             AL10.alSourcei(sourceId, AL10.AL_LOOPING, AL10.AL_FALSE);
@@ -1188,7 +1211,7 @@ public class GDXAudio implements AudioEngine {
             long soundId = nextSound++;
             sourceToSound.put(sourceId, soundId);
             soundToSource.put(soundId, sourceId);
-            soundtoEffect.put(soundId,new SoundEffect[attributes[0]]);
+            soundtoEffect.put(soundId,new EffectFilter[attributes[0]]);
             
             AL10.alSourcei(sourceId, AL10.AL_BUFFER, bufferId);
             AL10.alSourcei(sourceId, AL10.AL_LOOPING, AL10.AL_TRUE);
@@ -1394,8 +1417,8 @@ public class GDXAudio implements AudioEngine {
          * @param soundId   The playback instance
          * @param effect    The effect Object
          * */
-        public void AddEffect(long soundId, SoundEffect effect){
-            SoundEffect[] sends = soundtoEffect.get(soundId);
+        public void addEffect(long soundId, EffectFilter effect){
+            EffectFilter[] sends = soundtoEffect.get(soundId);
             for(int i = 0; i < sends.length; i++){
                 if(sends[i]==null){
                     if(GDXAudio.this.setEffect(soundToSource.get(soundId), effect,i))
@@ -1411,11 +1434,11 @@ public class GDXAudio implements AudioEngine {
          * @param soundId   The playback instance
          * @param effect    The effect Object
          * */
-        public void removeEffect(long soundId, SoundEffect effect){
-            SoundEffect[] sends = soundtoEffect.get(soundId);
+        public void removeEffect(long soundId, EffectFilter effect){
+            EffectFilter[] sends = soundtoEffect.get(soundId);
             for(int i = 0; i < sends.length; i++) {
                 if (sends[i] == effect) {
-                    GDXAudio.this.removeEffect(soundToSource.get(soundId), effect, i);
+                    GDXAudio.this.removeEffect(soundToSource.get(soundId), i);
                     sends[i] = null;
                     break;
                 }
@@ -1672,7 +1695,7 @@ public class GDXAudio implements AudioEngine {
      * A music handle will release all locks on OpenAL sources when it is not playing.  
      * However, it is still best to dispose of it when it is no longer being used.
      */
-    private class MusicHandle extends OpenALMusic implements MusicBuffer, OpenALBuffer {
+    private class MusicHandle extends OpenALMusic implements MusicQueue, OpenALBuffer {
         /** The minimum allowable buffer size (mandated by the simple MP3 decoder) */
         private static final int MINIMUM_SIZE = 16384;
         /** The (maximum) size of an individual OpenAL buffer */
@@ -1742,7 +1765,7 @@ public class GDXAudio implements AudioEngine {
         private OnTransitionListener onTransitionListener = null;
 
         /** the effectid */
-        private int effectId = AL_EFFECT_NULL;
+        private EffectFilter[] effects = new EffectFilter[attributes[0]];
         
         /**
          * Creates a new music buffer with the given properties.
@@ -1903,7 +1926,11 @@ public class GDXAudio implements AudioEngine {
                 if (globalPause) {
                     paused[sourceToIndex.get(sourceId, -1)] = true;
                 } else {
-                    GDXAudio.this.setEffect(sourceId,effectId);
+                    for(int i = 0; i < effects.length; i++)
+                        if(effects[i]!=null)
+                            GDXAudio.this.setEffect(sourceId,effects[i],i);
+                        else
+                            GDXAudio.this.removeEffect(sourceId,i);
                     setSourceGain( sourceId, volume );
                     setSourcePitch( sourceId, pitch );
                     setSourcePan( sourceId, pan );
@@ -2133,12 +2160,32 @@ public class GDXAudio implements AudioEngine {
             }
         }
 
-        public void setEffect(int effectId){
-            this.effectId = effectId;
+        /**
+         * Add an effect to the music playback
+         *
+         * @param effect    The effect Object
+         * */
+        public void addEffect(EffectFilter effect){
+            for(int i = 0; i < effects.length; i++){
+                if(effects[i]==null){
+                    effects[i] = effect;
+                    break;
+                }
+            }
         }
 
-        public void removeEffect(){
-           this.effectId = AL_EFFECT_NULL;
+        /**
+         * Remove an effect from the sound instance
+         *
+         * @param effect    The effect Object
+         * */
+        public void removeEffect(EffectFilter effect){
+            for(int i = 0; i < effects.length; i++) {
+                if (effects[i] == effect) {
+                    effects[i] = null;
+                    break;
+                }
+            }
         }
 
         /** 
