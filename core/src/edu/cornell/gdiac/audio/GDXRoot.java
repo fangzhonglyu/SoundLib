@@ -31,6 +31,9 @@ public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnComplet
 
 
 	private class KeyHandler extends InputAdapter {
+		long soundId;
+		EffectFactory f = engine.getEffectFactory();
+		EffectFilter s = f.createChorus();
 
 		@Override
 		public boolean keyDown(int keycode) {
@@ -43,31 +46,25 @@ public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnComplet
 					}
 					return true;
 				case Input.Keys.NUM_2:
-					if (sound2 != null) {
-						sound2.play();
+					if (music1 != null) {
+						music1.addEffect(s);
 					}
 					return true;
 				case Input.Keys.NUM_3:
-					if (sound3 != null) {
-						sound3.play();
+					if (music1 != null) {
+						music1.removeEffect(s);
 					}
 					return true;
 				case Input.Keys.NUM_4:
-					if (music1 != null) {
-						music1.play();
+					if (sound2 != null) {
+						soundId = sound2.play();
+						sound2.addEffect(soundId,s);
 					}
 					return true;
 				case Input.Keys.NUM_5:
-					//music1.advanceSource();
-					//((AudioEngine)Gdx.audio).pause();
-					music1.setPosition( 20.0f );
-					//play(sample,device);
-					/*
-					if (music2 != null) {
-						music2.play();
-					}
-
-					 */
+					if(sound2.isPlaying(soundId))
+						sound2.removeEffect(soundId,s);
+					//music1.setPosition( 20.0f );
 					return true;
 				case Input.Keys.NUM_6:
 					//music1.jumpToSource(0);
@@ -136,7 +133,7 @@ public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnComplet
 		AudioEngine audio = (AudioEngine)Gdx.audio;
 
 		sound1 = manager.getEntry("failurewav", SoundEffect.class);
-		sound2 = manager.getEntry("failureogg", SoundEffect.class);
+		sound2 = manager.getEntry("dodgemp3", SoundEffect.class);
 		sound3 = manager.getEntry("failuremp3", SoundEffect.class);
 		//music1 = manager.getEntry("twofer", MusicQueue.class);
 		music1 = audio.newMusic( Gdx.files.internal("Dodge.wav" ));
@@ -161,14 +158,16 @@ public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnComplet
 		music1.setLoopBehavior( true );
 		System.out.println("Duration :" + music1.getDuration());
 		music1.setVolume(1);
+
 		EffectFactory f = audio.getEffectFactory();
 		EffectFilter flanger = f.createFlanger();
 		EffectFilter chorus = f.createChorus();
 		EffectFilter com = f.createAutoWAH();
 		//music1.addEffect(flanger);
-		music1.addEffect(chorus);
+		//music1.addEffect(chorus);
 		//music1.addEffect(com);
-		music1.play();
+		//music1.play();
+		//music1.addEffect(chorus);
 
 
 

@@ -22,7 +22,8 @@
     "sounds": {
         "failurewav": "Failure.wav",
         "failureogg": "Failure.ogg",
-        "failuremp3": "Failure.mp3"
+        "failuremp3": "Failure.mp3",
+        "dodgemp3": "Dodge.mp3"
     },
     "music": {
         "twofer": {

@@ -201,17 +201,21 @@ public interface MusicQueue extends Music {
     /**
      * Add an effect to the music playback
      *
-     * @param effect    The effect Object
+     * @param effect The effect Object
      * */
     public void addEffect(EffectFilter effect);
 
     /**
      * Remove an effect from the sound instance
      *
-     * @param effect    The effect Object
+     * @param effect The effect Object
      * */
     public void removeEffect(EffectFilter effect);
-     
+
+    /**
+     * Clear all effects on the music playback
+     * */
+    public void clearAllEffect();
      
     // #mark Queue Management
     /**

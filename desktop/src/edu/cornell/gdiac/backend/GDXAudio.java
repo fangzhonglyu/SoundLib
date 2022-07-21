@@ -33,6 +33,7 @@ import org.lwjgl.openal.*;
 import java.lang.reflect.Method;
 import java.nio.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.lwjgl.openal.AL10.*;
 import static org.lwjgl.openal.ALC10.*;
@@ -296,7 +297,7 @@ public class GDXAudio implements AudioEngine {
     }
 
     public void removeEffect(int sourceId, int sendSlot){
-        if(alIsSource(sourceId)){
+        if(!alIsSource(sourceId)){
             return;
         }
         AL11.alSource3i(sourceId,AL_AUXILIARY_SEND_FILTER,AL_EFFECTSLOT_NULL,sendSlot,AL_FILTER_NULL);
@@ -1131,7 +1132,6 @@ public class GDXAudio implements AudioEngine {
             long soundId = nextSound++;
             sourceToSound.put(sourceId, soundId);
             soundToSource.put(soundId, sourceId);
-            soundtoEffect.put(soundId,new EffectFilter[attributes[0]]);
             
             AL10.alSourcei(sourceId, AL10.AL_BUFFER, bufferId);
             AL10.alSourcei(sourceId, AL10.AL_LOOPING, AL10.AL_FALSE);
@@ -1211,7 +1211,6 @@ public class GDXAudio implements AudioEngine {
             long soundId = nextSound++;
             sourceToSound.put(sourceId, soundId);
             soundToSource.put(soundId, sourceId);
-            soundtoEffect.put(soundId,new EffectFilter[attributes[0]]);
             
             AL10.alSourcei(sourceId, AL10.AL_BUFFER, bufferId);
             AL10.alSourcei(sourceId, AL10.AL_LOOPING, AL10.AL_TRUE);
@@ -1418,6 +1417,8 @@ public class GDXAudio implements AudioEngine {
          * @param effect    The effect Object
          * */
         public void addEffect(long soundId, EffectFilter effect){
+            if(!soundtoEffect.containsKey(soundId))
+                soundtoEffect.put(soundId,new EffectFilter[attributes[0]]);
             EffectFilter[] sends = soundtoEffect.get(soundId);
             for(int i = 0; i < sends.length; i++){
                 if(sends[i]==null){
@@ -1435,6 +1436,8 @@ public class GDXAudio implements AudioEngine {
          * @param effect    The effect Object
          * */
         public void removeEffect(long soundId, EffectFilter effect){
+            if(!soundtoEffect.containsKey(soundId))
+                return;
             EffectFilter[] sends = soundtoEffect.get(soundId);
             for(int i = 0; i < sends.length; i++) {
                 if (sends[i] == effect) {
@@ -1896,7 +1899,20 @@ public class GDXAudio implements AudioEngine {
             onCompletionListener = null;
             onTransitionListener = null;
         }
-        
+
+        /**
+         * Refreshes the effect sends of a music stream
+         *
+         * */
+        public synchronized void updateEffect(){
+            for(int i = 0; i < effects.length; i++) {
+                if (effects[i] != null)
+                    GDXAudio.this.setEffect(sourceId, effects[i], i);
+                else {
+                    GDXAudio.this.removeEffect(sourceId, i);
+                }
+            }
+        }
 
         /** 
          * Starts the play back of the music stream. 
@@ -1926,11 +1942,7 @@ public class GDXAudio implements AudioEngine {
                 if (globalPause) {
                     paused[sourceToIndex.get(sourceId, -1)] = true;
                 } else {
-                    for(int i = 0; i < effects.length; i++)
-                        if(effects[i]!=null)
-                            GDXAudio.this.setEffect(sourceId,effects[i],i);
-                        else
-                            GDXAudio.this.removeEffect(sourceId,i);
+                    updateEffect();
                     setSourceGain( sourceId, volume );
                     setSourcePitch( sourceId, pitch );
                     setSourcePan( sourceId, pan );
@@ -2172,6 +2184,7 @@ public class GDXAudio implements AudioEngine {
                     break;
                 }
             }
+            updateEffect();
         }
 
         /**
@@ -2186,6 +2199,15 @@ public class GDXAudio implements AudioEngine {
                     break;
                 }
             }
+            updateEffect();
+        }
+
+        /**
+         * Clear all effects on the music playback
+         * */
+        public void clearAllEffect(){
+            Arrays.fill(effects, null);
+            updateEffect();
         }
 
         /** 
