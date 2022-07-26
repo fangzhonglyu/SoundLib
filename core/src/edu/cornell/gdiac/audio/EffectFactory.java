@@ -24,28 +24,153 @@ package edu.cornell.gdiac.audio;
  * */
 public interface EffectFactory {
     /**
-     * This class contains definitions for constructing a reverb object
+     * This class contains definitions for constructing a reverberation sound effect
      *
      * Edit properties of a ReverbDef object then use {@link #createReverb()} or {@link #updateReverb(EffectFilter, ReverbDef)}
      * to transfer properties from ReverbDef to the effect object.
      */
     public class ReverbDef {
+
+        // Below are the default Settings for reverb effects
+        // [] denote the ranges of the values
+
         /**
-         * Default Settings for reverb effects
+         * Reverb density controls the coloration of the late reverb.
+         * Lowering the value adds more coloration to the late reverb.
+         *
+         * MAX: 1.0f
+         * MIN: 0.0f
          */
-        public float                                    // [] denote the ranges of the values
-                REVERB_DENSITY = 1.0f,                  // [0.0f,1.0f]
-                REVERB_DIFFUSION = 1.0f,                // [0.0f,1.0f]
-                REVERB_GAIN = 0.32f,                    // [0.0f,1.0f]
-                REVERB_GAINHF = 0.89f,                  // [0.0f,1.0f]
-                REVERB_DECAY_TIME = 1.49f,              // [0.1f,20.0f]
-                REVERB_DECAY_HFRATIO = 0.83f,           // [0.1f,2.0f]
-                REVERB_REFLECTIONS_GAIN = 0.05f,        // [0.0f,3.16f]
-                REVERB_REFLECTIONS_DELAY = 0.007f,      // [0.0f,0.3f]
-                REVERB_LATE_REVERB_GAIN = 1.26f,        // [0.0f,10.0f]
-                REVERB_LATE_REVERB_DELAY = 0.011f,      // [0.0f,0.1f]
-                REVERB_AIR_ABSORPTION_GAINHF = 0.994f,  // [0.892f,1.0f]
-                REVERB_ROOM_ROLLOFF_FACTOR = 0.0f;      // [0.0f,10.0f]
+        public float REVERB_DENSITY = 1.0f,
+
+        /**
+         * Reverb diffusion controls the echo density in the reverberation decay.
+         * Reducing diffusion gives the reverberation a more “grainy” character that is especially noticeable with
+         * percussive sound sources.
+         * Setting the diffusion to 0.0f will make reverberation sound like a succession of distinct echoes.
+         *
+         * MAX: 1.0f
+         * MIN: 0.0f
+         */
+            REVERB_DIFFUSION = 1.0f,
+
+        /**
+         * The Reverb Gain property is the master volume control for the reflected sound (both early reflections and
+         * reverberation) that the reverb effect adds to all sound sources. It sets the maximum amount of reflections
+         * and reverberation added to the final sound mix.
+         *
+         * MAX: 1.0f (0db)
+         * MIN: 0.0f (-100db)
+         */
+            REVERB_GAIN = 0.32f,
+
+        /**
+         * The Reverb Gain HF property further tweaks reflected sound by attenuating it at high frequencies. It controls
+         * a low-pass filter that applies globally to the reflected sound of all sound sources feeding the particular
+         * instance of the reverb effect.
+         *
+         * MAX: 1.0f (0db)
+         * MIN: 0.0f (-100db)
+         */
+            REVERB_GAINHF = 0.89f,
+        /**
+         * The Decay Time property sets the reverberation decay time.
+         *
+         * MAX: 20.0f
+         * MIN: 0.1f
+         */
+            REVERB_DECAY_TIME = 1.49f,
+
+        /**
+         * The Decay HF Ratio property sets the spectral quality of the Decay Time parameter. It is the ratio of
+         * high-frequency decay time relative to the time set by Decay Time.
+         *
+         * The Decay HF Ratio value 1.0 is neutral: the decay time is equal for all frequencies. As Decay HF Ratio
+         * increases above 1.0, the high-frequency decay time increases, so it’s longer than the decay time at low
+         * frequencies. You hear a more brilliant reverberation with a longer decay at high frequencies. As the Decay
+         * HF Ratio value decreases below 1.0, the high-frequency decay time decreases, so it’s shorter than the decay
+         * time of the low frequencies. You hear a more natural reverberation.
+         *
+         * MAX: 2.0f
+         * MIN: 0.1f
+         */
+            REVERB_DECAY_HFRATIO = 0.83f,
+
+        /**
+         * The Reflections Gain property controls the overall amount of initial reflections relative to the Gain
+         * property.
+         *
+         * You can increase the amount of initial reflections to simulate a more narrow space or closer
+         * walls, especially effective if you associate the initial reflections increase with a reduction in
+         * reflections delays by lowering the value of the Reflection Delay property. To simulate open or semi-open
+         * environments, you can maintain the amount of early reflections while reducing the value of the Late Reverb
+         * Gain property, which controls later reflections.
+         *
+         * MAX: 3.16f (+10db)
+         * MIN: 0.0f (-100db)
+         */
+            REVERB_REFLECTIONS_GAIN = 0.05f,
+
+        /**
+         * The Reflections Delay property is the amount of delay between the arrival time of the direct path from the
+         * source to the first reflection from the source.
+         *
+         * You can reduce or increase Reflections Delay to simulate closer or more distant reflective surfaces—and
+         * therefore control the perceived size of the room.
+         *
+         * MAX: 0.3f (300ms)
+         * MIN: 0.0f (0ms)
+         */
+            REVERB_REFLECTIONS_DELAY = 0.007f,
+
+        /**
+         * The Late Reverb Gain property controls the overall amount of later reverberation relative to the Gain
+         * property. (The Gain property sets the overall amount of both initial reflections and later reverberation.)
+         *
+         * MAX: 10.0f (+20db)
+         * MIN: 0.0f (-100db)
+         */
+            REVERB_LATE_REVERB_GAIN = 1.26f,
+
+        /**
+         * The Late Reverb Delay property defines the begin time of the late reverberation relative to the time of the
+         * initial reflection (the first of the early reflections).
+         *
+         * MAX: 0.1f (100ms)
+         * MIN: 0.0f (0ms)
+         */
+            REVERB_LATE_REVERB_DELAY = 0.011f,
+
+        /**
+         * The Air Absorption Gain HF property controls the distance-dependent attenuation at high frequencies caused
+         * by the propagation medium. It applies to reflected sound only.
+         *
+         * You can use Air Absorption Gain HF to simulate sound transmission through foggy air, dry air, smoky
+         * atmosphere, and so on. The default value is 0.994 (-0.05 dB) per meter, which roughly corresponds to typical
+         * condition of atmospheric humidity, temperature, and so on. Lowering the value simulates a more absorbent
+         * medium (more humidity in the air, for example); raising the value simulates a less absorbent medium
+         * (dry desert air, for example).
+         *
+         * MAX: 1.0f
+         * MIN: 0.892f
+         */
+            REVERB_AIR_ABSORPTION_GAINHF = 0.994f,
+
+        /**
+         * The Room Rolloff Factor property is one of two methods available to attenuate the reflected sound
+         * (containing both reflections and reverberation) according to source-listener distance.
+         *
+         * Setting the Room Rolloff Factor value to 1.0 specifies that the reflected sound will decay by 6 dB every
+         * time the distance doubles. Any value other than 1.0 is equivalent to a scaling factor applied to the
+         * quantity specified by ((Source listener distance) - (Reference Distance)). Reference Distance is an OpenAL
+         * source parameter that specifies the inner border for distance rolloff effects: if the source comes closer to
+         * the listener than the reference distance, the direct-path sound isn’t increased as the source comes closer
+         * to the listener, and neither is the reflected sound.
+         *
+         * MAX: 10.0f
+         * MIN: 0.0f
+         */
+            REVERB_ROOM_ROLLOFF_FACTOR = 0.0f;
     }
 
     /**
@@ -59,6 +184,7 @@ public interface EffectFactory {
      * Create default reverb object
      */
     public EffectFilter createReverb();
+
     /**
      * Update an existing reverb effect based on the ReverbDef
      *
@@ -70,34 +196,154 @@ public interface EffectFactory {
     /**
      * This class contains definitions for constructing a EAXReverb object
      *
+     * EAXReverb is a superset of the standard reverb effect with additional control over the reverb tone,
+     * reverb directivity, and reverb granularity.
+     *
+     * The EAX Reverb is natively supported on any devices that support the EAX 3.0 or above standard, including:
+     * SoundBlaster Audigy series soundcards
+     * SoundBlaster X-Fi series soundcards
+     *
+     * The EAX Reverb will be emulated on devices that only support EAX 2.0. Note: The “Generic Software” device falls
+     * into this category as the software mixer supports the EAX 2.0 Reverb effect.
+     *
      * Edit properties of a EAXReverbDef object then use {@link #createEAXReverb()} or {@link #updateEAXReverb(EffectFilter, EAXReverbDef)}
      * to transfer properties from EAXReverbDef to the effect object.
      */
     public class EAXReverbDef {
-        /**
-         * Default Settings for EAX reverb effects
-         */
+        // Default Settings for EAX reverb effects
+        /** These settings are the same as their standard reverb counterparts, refer to {@link ReverbDef} */
         public float                                        // [] denote the ranges of the values
                 EAXREVERB_DENSITY = 1.0f,                   // [0.0f,1.0f]
                 EAXREVERB_DIFFUSION = 1.0f,                 // [0.0f,1.0f]
                 EAXREVERB_GAIN = 0.32f,                     // [0.0f,1.0f]
                 EAXREVERB_GAINHF = 0.89f,                   // [0.0f,1.0f]
-                EAXREVERB_GAINLF = 1.0f,                    // [0.0f,1.0f]
                 EAXREVERB_DECAY_TIME = 1.49f,               // [0.1f,20.0f]
                 EAXREVERB_DECAY_HFRATIO = 0.83f,            // [0.1f,2.0f]
-                EAXREVERB_DECAY_LFRATIO = 1.0f,             // [0.1f,2.0f]
                 EAXREVERB_REFLECTIONS_GAIN = 0.05f,         // [0.0f,3.16f]
                 EAXREVERB_REFLECTIONS_DELAY = 0.007f,       // [0.0f,0.3f]
                 EAXREVERB_LATE_REVERB_GAIN = 1.26f,         // [0.0f,10.0f]
                 EAXREVERB_LATE_REVERB_DELAY = 0.011f,       // [0.0f,0.1f]
-                EAXREVERB_ECHO_TIME = 0.25f,                // [0.075f,0.25f]
-                EAXREVERB_ECHO_DEPTH = 0.0f,                // [0.0f,1.0f]
-                EAXREVERB_MODULATION_TIME = 0.25f,          // [0.04f,4.0f]
-                EAXREVERB_MODULATION_DEPTH = 0.0f,          // [0.0f,1.0f]
                 EAXREVERB_AIR_ABSORPTION_GAINHF = 0.994f,   // [0.892f,1.0f]
-                EAXREVERB_HFREFERENCE = 5000.0f,            // [1000.0f,20000.0f]
-                EAXREVERB_LFREFERENCE = 250.0f,             // [20.0f,1000.0f]
                 EAXREVERB_ROOM_ROLLOFF_FACTOR = 0.0f;       // [0.0f,10.0f]
+
+        /**
+         * The Reverb Gain LF property further tweaks reflected sound by attenuating it at low frequencies.
+         *
+         * It controls a high-pass filter that applies globally to the reflected sound of all sound sources feeding the
+         * particular instance of the reverb effect.
+         * ({@link #EAXREVERB_LFREFERENCE } sets the frequency at which the value of this property is measured.)
+         *
+         * MAX: 1.0f (0db)
+         * MIN: 0.0f (-100db)
+         */
+        public float EAXREVERB_GAINLF = 1.0f,                    // [0.0f,1.0f]
+
+        /**
+         * The Decay LF Ratio property adjusts the spectral quality of the Decay Time parameter.
+         *
+         * It is the ratio of low-frequency decay time relative to the time set by Decay Time.
+         * The Decay LF Ratio value 1.0 is neutral: the decay time is equal for all frequencies.
+         * As Decay LF Ratio increases above 1.0, the low-frequency decay time increases so it’s longer than the decay
+         * time at mid frequencies. You hear a more booming reverberation with a longer decay at low frequencies.
+         * As the Decay LF Ratio value decreases below 1.0, the low-frequency decay time decreases so it’s shorter
+         * than the decay time of the mid frequencies. You hear a more tinny reverberation.
+         *
+         * MAX: 2.0f
+         * MIN: 0.1f
+         */
+            EAXREVERB_DECAY_LFRATIO = 1.0f,
+
+        /**
+         * Echo Depth introduces a cyclic echo in the reverberation decay, which will be noticeable with transient or
+         * percussive sounds. A larger value of Echo Depth will make this effect more prominent.
+         *
+         * MAX: 1.0f
+         * MIN: 0.0f
+         */
+            EAXREVERB_ECHO_DEPTH = 0.0f,
+
+        /**
+         * Echo Time controls the rate at which the cyclic echo repeats itself along the reverberation decay.
+         * For example, the default setting for Echo Time is 250 ms. causing the echo to occur 4 times per second.
+         * Therefore, if you were to clap your hands in this type of environment, you will hear four repetitions of
+         * clap per second.
+         *
+         * MAX: 0.25f
+         * MIN: 0.075f
+         */
+            EAXREVERB_ECHO_TIME = 0.25f,
+
+        /**
+         * Using Modulation time and Modulation Depth, you can create a pitch modulation in the reverberant sound.
+         * This will be most noticeable applied to sources that have tonal color or pitch. You can use this to make
+         * some trippy effects!
+         *
+         * Modulation Time controls the speed of the vibrato (rate of periodic changes in pitch).
+         *
+         * MAX: 4.0f
+         * MIN: 0.04f
+         */
+            EAXREVERB_MODULATION_TIME = 0.25f,          // [0.04f,4.0f]
+
+        /**
+         * Modulation Depth controls the amount of pitch change. Low values of Diffusion will contribute to reinforcing
+         * the perceived effect by reducing the mixing of overlapping reflections in the reverberation decay.
+         *
+         * MAX: 1.0f
+         * MIN: 0.0f
+         */
+            EAXREVERB_MODULATION_DEPTH = 0.0f,          // [0.0f,1.0f]
+
+        /**
+         * The properties HF Reference and LF Reference determine respectively the frequencies at which the
+         * high-frequency effects and the low-frequency effects created by EAX Reverb properties are measured,
+         * for example Decay HF Ratio and Decay LF Ratio.  Note that it is necessary to maintain a factor of at least
+         * 10 between these two reference frequencies so that low frequency and high frequency properties can be
+         * accurately controlled and will produce independent effects. In other words, the LF Reference value should
+         * be less than 1/10 of the HF Reference value.
+         *
+         * HF MAX: 20000.0f
+         * HF MIN: 1000.0f
+         *
+         * LF MAX: 1000.0f
+         * LF MIN: 20.0f
+         */
+            EAXREVERB_HFREFERENCE = 5000.0f,
+            EAXREVERB_LFREFERENCE = 250.0f;
+
+
+        /**
+         * The Reflections Pan property is a 3D vector that controls the spatial distribution of the cluster of early
+         * reflections.
+         *
+         * The direction of this vector controls the global direction of the reflections, while its magnitude controls
+         * how focused the reflections are towards this direction.  It is important to note that the direction of the
+         * vector is interpreted in the coordinate system of the user, without taking into account the orientation of
+         * the virtual listener. For instance, assuming a four-point loudspeaker playback system, setting Reflections
+         * Pan to (0., 0., 0.7) means that the reflections are panned to the front speaker pair, whereas as setting
+         * of (0., 0., −0.7) pans the reflections towards the rear speakers. These vectors follow the a left-handed
+         * co-ordinate system, unlike OpenAL uses a right-handed co-ordinate system.  If the magnitude of Reflections
+         * Pan is zero (the default setting), the early reflections come evenly from all directions. As the magnitude
+         * increases, the reflections become more focused in the direction pointed to by the vector. A magnitude of
+         * 1.0 would represent the extreme case, where all reflections come from a single direction.
+         *
+         * THE VECTOR SHOULD HAVE A MAGNITUDE BETWEEN 0 AND 1
+         *
+         * MAX: [1.0f,1.0f,1.0f]
+         * MIN: [-1.0f,-1.0f,-1.0f]
+         */
+        public float[] EAXREVERB_REFLECTIONS_PAN = {0.0f,0.0f,0.0f},
+
+        /**
+         * The Late Reverb Pan property is a 3D vector that controls the spatial distribution of the late
+         * reverb. T
+         *
+         * The direction of this vector controls the global direction of the reverb, while its magnitude
+         * controls how focused the reverb are towards this direction.
+         *
+         * The details under {@link #EAXREVERB_REFLECTIONS_PAN} also apply to Late Reverb Pan.
+         */
+            EAXREVERB_LATE_REVERB_PAN = {0.0f,0.0f,0.0f};
     }
 
     /**
@@ -121,23 +367,81 @@ public interface EffectFactory {
     public void updateEAXReverb(EffectFilter eaxReverb, EAXReverbDef def);
 
     /**
-     * This class contains definitions for constructing a chorus object
+     * This class contains definitions for constructing a chorus effect filter object
+     *
+     * The chorus effect essentially replays the input audio accompanied by another slightly delayed version of the
+     * signal, creating a ‘doubling’ effect. This was originally intended to emulate the effect of several musicians
+     * playing the same notes simultaneously, to create a thicker, more satisfying sound.
+     *
+     * To add some variation to the effect, the delay time of the delayed versions of the input signal is modulated by
+     * an adjustable oscillating waveform. This causes subtle shifts in the pitch of the delayed signals, emphasizing
+     * the thickening effect.
      *
      * Edit properties of a ChorusDef object then use {@link #createChorus()} or {@link #updateChorus(EffectFilter, ChorusDef)}
      * to transfer properties from ChorusDef to the effect object.
      */
     public class ChorusDef {
-        /** Default Settings for Chorus effects */
-        public int                              // [] denote the ranges of the values
-                CHORUS_WAVEFORM = 1,            // [0,1]
-                CHORUS_PHASE = 90;              // [-180,180]
 
-        /** Default Settings for Chorus effects */
-        public float
-                CHORUS_RATE = 1.1f,             // [0.0f,10.0f]
-                CHORUS_DEPTH = 0.1f,            // [0.0f,1.0f]
-                CHORUS_FEEDBACK = 0.25f,        // [-1.0f,1.0f]
-                CHORUS_DELAY = 0.016f;          // [0.0f,0.016f]
+        // Default Settings for Chorus effects
+        // [] denote the ranges of the values
+        /**
+         * This property sets the waveform shape of the LFO that controls the delay time of the delayed signals.
+         * THIS IS EITHER 0 or 1
+         *
+         * 0: Sin waveform
+         * 1: Triangle waveform
+         */
+        public int CHORUS_WAVEFORM = 1,
+
+        /**
+         * This property controls the phase difference between the left and right LFO’s. At zero degrees the two LFOs
+         * are synchronized. Use this parameter to create the illusion of an expanded stereo field of the output
+         * signal.
+         *
+         * MAX: 180
+         * MIN: -180
+         */
+            CHORUS_PHASE = 90;
+
+        /**
+         * This property sets the modulation rate of the LFO that controls the delay time of the delayed signals.
+         *
+         * MAX: 10.0f
+         * MIN: 0.0f
+         */
+        public float CHORUS_RATE = 1.1f,
+
+        /**
+         * This property controls the amount by which the delay time is modulated by the LFO.
+         *
+         * MAX: 1.0f
+         * MIN: 0.0f
+         */
+            CHORUS_DEPTH = 0.1f,
+
+        /**
+         * This property controls the amount of processed signal that is fed back to the input of the chorus effect.
+         *
+         * Negative values will reverse the phase of the feedback signal. At full magnitude the identical sample will
+         * repeat endlessly. At lower magnitudes the sample will repeat and fade out over time. Use this parameter to
+         * create a “cascading” chorus effect.
+         *
+         * MAX: 1.0f
+         * MIN: -1.0f
+         */
+            CHORUS_FEEDBACK = 0.25f,
+
+        /**
+         * This property controls the average amount of time the sample is delayed before it is played back, and with
+         * feedback, the amount of time between iterations of the sample.
+         *
+         * Larger values lower the pitch. Smaller values make the chorus sound like a {@link FlangerDef}, but with
+         * different frequency characteristics.
+         *
+         * MAX: 0.016f
+         * MIN: 0.0f
+         */
+            CHORUS_DELAY = 0.016f;          // [0.0f,0.016f]
     }
 
     /**
@@ -162,6 +466,11 @@ public interface EffectFactory {
 
     /**
      * This class contains definitions for constructing a distortion object
+     *
+     * The distortion effect simulates turning up (overdriving) the gain stage on a guitar amplifier or adding a
+     * distortion pedal to an instrument’s output.  It is achieved by clipping the signal (adding more square wave-like
+     * components) and adding rich harmonics.  The distortion effect could be very useful for adding extra dynamics to
+     * engine sounds in a driving simulator, or modifying samples such as vocal communications. 
      *
      * Edit properties of a DistortionDef object then use {@link #createDistortion()} or {@link #updateDistortion(EffectFilter, DistortionDef)} )}
      * to transfer properties from DistortionDef to the effect object.

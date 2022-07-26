@@ -49,6 +49,10 @@ public class Effect implements edu.cornell.gdiac.audio.EffectFilter {
         alEffectf(id,att,value);
     }
 
+    public void setAttribute(int att, float[] values){
+        alEffectfv(id,att,values);
+    }
+
     /**
      * @return the id of the effect in openAL
      * */

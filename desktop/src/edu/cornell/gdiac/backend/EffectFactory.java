@@ -85,6 +85,9 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
         ((Effect)eaxReverb).setAttribute(AL_EAXREVERB_DIFFUSION, def.EAXREVERB_DIFFUSION);
         ((Effect)eaxReverb).setAttribute(AL_EAXREVERB_GAIN, def.EAXREVERB_GAIN);
         ((Effect)eaxReverb).setAttribute(AL_EAXREVERB_GAINHF, def.EAXREVERB_GAINHF);
+        ((Effect)eaxReverb).setAttribute(AL_EAXREVERB_GAINLF, def.EAXREVERB_GAINLF);
+        ((Effect)eaxReverb).setAttribute(AL_EAXREVERB_REFLECTIONS_PAN,def.EAXREVERB_REFLECTIONS_PAN);
+        ((Effect)eaxReverb).setAttribute(AL_EAXREVERB_LATE_REVERB_PAN,def.EAXREVERB_LATE_REVERB_PAN);
         ((Effect)eaxReverb).setAttribute(AL_EAXREVERB_DECAY_TIME, def.EAXREVERB_DECAY_TIME);
         ((Effect)eaxReverb).setAttribute(AL_EAXREVERB_DECAY_HFRATIO, def.EAXREVERB_DECAY_HFRATIO);
         ((Effect)eaxReverb).setAttribute(AL_EAXREVERB_DECAY_LFRATIO, def.EAXREVERB_DECAY_LFRATIO);
@@ -184,7 +187,7 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
      * Create default Echo object
      */
     public EffectFilter createEcho() {
-        return createDistortion(new DistortionDef());
+        return createEcho(new EchoDef());
     }
 
     /**

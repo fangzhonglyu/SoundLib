@@ -2178,6 +2178,11 @@ public class GDXAudio implements AudioEngine {
          * @param effect    The effect Object
          * */
         public void addEffect(EffectFilter effect){
+            for (EffectFilter effectFilter : effects) {
+                if (effectFilter == effect) {
+                    return;
+                }
+            }
             for(int i = 0; i < effects.length; i++){
                 if(effects[i]==null){
                     effects[i] = effect;

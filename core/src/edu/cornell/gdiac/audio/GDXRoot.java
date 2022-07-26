@@ -32,8 +32,11 @@ public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnComplet
 
 	private class KeyHandler extends InputAdapter {
 		long soundId;
+
+		boolean music1Chorus = false, music1Echo = false;
 		EffectFactory f = engine.getEffectFactory();
 		EffectFilter s = f.createChorus();
+		EffectFilter s2 = f.createEcho();
 
 		@Override
 		public boolean keyDown(int keycode) {
@@ -47,12 +50,26 @@ public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnComplet
 					return true;
 				case Input.Keys.NUM_2:
 					if (music1 != null) {
-						music1.addEffect(s);
+						if(music1Chorus) {
+							music1.removeEffect(s);
+							music1Chorus = false;
+						}
+						else {
+							music1.addEffect(s);
+							music1Chorus = true;
+						}
 					}
 					return true;
 				case Input.Keys.NUM_3:
 					if (music1 != null) {
-						music1.removeEffect(s);
+						if(music1Echo) {
+							music1.removeEffect(s2);
+							music1Echo = false;
+						}
+						else {
+							music1.addEffect(s2);
+							music1Echo = true;
+						}
 					}
 					return true;
 				case Input.Keys.NUM_4:
@@ -166,7 +183,7 @@ public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnComplet
 		//music1.addEffect(flanger);
 		//music1.addEffect(chorus);
 		//music1.addEffect(com);
-		//music1.play();
+		music1.play();
 		//music1.addEffect(chorus);
 
 
