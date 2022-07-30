@@ -52,7 +52,7 @@ public interface EffectFactory {
          * MAX: 1.0f
          * MIN: 0.0f
          */
-            REVERB_DIFFUSION = 1.0f,
+        REVERB_DIFFUSION = 1.0f,
 
         /**
          * The Reverb Gain property is the master volume control for the reflected sound (both early reflections and
@@ -62,7 +62,7 @@ public interface EffectFactory {
          * MAX: 1.0f (0db)
          * MIN: 0.0f (-100db)
          */
-            REVERB_GAIN = 0.32f,
+        REVERB_GAIN = 0.32f,
 
         /**
          * The Reverb Gain HF property further tweaks reflected sound by attenuating it at high frequencies. It controls
@@ -72,14 +72,14 @@ public interface EffectFactory {
          * MAX: 1.0f (0db)
          * MIN: 0.0f (-100db)
          */
-            REVERB_GAINHF = 0.89f,
+        REVERB_GAINHF = 0.89f,
         /**
          * The Decay Time property sets the reverberation decay time.
          *
          * MAX: 20.0f
          * MIN: 0.1f
          */
-            REVERB_DECAY_TIME = 1.49f,
+        REVERB_DECAY_TIME = 1.49f,
 
         /**
          * The Decay HF Ratio property sets the spectral quality of the Decay Time parameter. It is the ratio of
@@ -94,7 +94,7 @@ public interface EffectFactory {
          * MAX: 2.0f
          * MIN: 0.1f
          */
-            REVERB_DECAY_HFRATIO = 0.83f,
+        REVERB_DECAY_HFRATIO = 0.83f,
 
         /**
          * The Reflections Gain property controls the overall amount of initial reflections relative to the Gain
@@ -109,7 +109,7 @@ public interface EffectFactory {
          * MAX: 3.16f (+10db)
          * MIN: 0.0f (-100db)
          */
-            REVERB_REFLECTIONS_GAIN = 0.05f,
+        REVERB_REFLECTIONS_GAIN = 0.05f,
 
         /**
          * The Reflections Delay property is the amount of delay between the arrival time of the direct path from the
@@ -121,7 +121,7 @@ public interface EffectFactory {
          * MAX: 0.3f (300ms)
          * MIN: 0.0f (0ms)
          */
-            REVERB_REFLECTIONS_DELAY = 0.007f,
+        REVERB_REFLECTIONS_DELAY = 0.007f,
 
         /**
          * The Late Reverb Gain property controls the overall amount of later reverberation relative to the Gain
@@ -130,7 +130,7 @@ public interface EffectFactory {
          * MAX: 10.0f (+20db)
          * MIN: 0.0f (-100db)
          */
-            REVERB_LATE_REVERB_GAIN = 1.26f,
+        REVERB_LATE_REVERB_GAIN = 1.26f,
 
         /**
          * The Late Reverb Delay property defines the begin time of the late reverberation relative to the time of the
@@ -139,7 +139,7 @@ public interface EffectFactory {
          * MAX: 0.1f (100ms)
          * MIN: 0.0f (0ms)
          */
-            REVERB_LATE_REVERB_DELAY = 0.011f,
+        REVERB_LATE_REVERB_DELAY = 0.011f,
 
         /**
          * The Air Absorption Gain HF property controls the distance-dependent attenuation at high frequencies caused
@@ -154,7 +154,7 @@ public interface EffectFactory {
          * MAX: 1.0f
          * MIN: 0.892f
          */
-            REVERB_AIR_ABSORPTION_GAINHF = 0.994f,
+        REVERB_AIR_ABSORPTION_GAINHF = 0.994f,
 
         /**
          * The Room Rolloff Factor property is one of two methods available to attenuate the reflected sound
@@ -170,7 +170,7 @@ public interface EffectFactory {
          * MAX: 10.0f
          * MIN: 0.0f
          */
-            REVERB_ROOM_ROLLOFF_FACTOR = 0.0f;
+        REVERB_ROOM_ROLLOFF_FACTOR = 0.0f;
     }
 
     /**
@@ -251,7 +251,7 @@ public interface EffectFactory {
          * MAX: 2.0f
          * MIN: 0.1f
          */
-            EAXREVERB_DECAY_LFRATIO = 1.0f,
+        EAXREVERB_DECAY_LFRATIO = 1.0f,
 
         /**
          * Echo Depth introduces a cyclic echo in the reverberation decay, which will be noticeable with transient or
@@ -260,7 +260,7 @@ public interface EffectFactory {
          * MAX: 1.0f
          * MIN: 0.0f
          */
-            EAXREVERB_ECHO_DEPTH = 0.0f,
+        EAXREVERB_ECHO_DEPTH = 0.0f,
 
         /**
          * Echo Time controls the rate at which the cyclic echo repeats itself along the reverberation decay.
@@ -271,7 +271,7 @@ public interface EffectFactory {
          * MAX: 0.25f
          * MIN: 0.075f
          */
-            EAXREVERB_ECHO_TIME = 0.25f,
+        EAXREVERB_ECHO_TIME = 0.25f,
 
         /**
          * Using Modulation time and Modulation Depth, you can create a pitch modulation in the reverberant sound.
@@ -283,7 +283,7 @@ public interface EffectFactory {
          * MAX: 4.0f
          * MIN: 0.04f
          */
-            EAXREVERB_MODULATION_TIME = 0.25f,          // [0.04f,4.0f]
+        EAXREVERB_MODULATION_TIME = 0.25f,          // [0.04f,4.0f]
 
         /**
          * Modulation Depth controls the amount of pitch change. Low values of Diffusion will contribute to reinforcing
@@ -292,7 +292,7 @@ public interface EffectFactory {
          * MAX: 1.0f
          * MIN: 0.0f
          */
-            EAXREVERB_MODULATION_DEPTH = 0.0f,          // [0.0f,1.0f]
+        EAXREVERB_MODULATION_DEPTH = 0.0f,          // [0.0f,1.0f]
 
         /**
          * The properties HF Reference and LF Reference determine respectively the frequencies at which the
@@ -308,8 +308,7 @@ public interface EffectFactory {
          * LF MAX: 1000.0f
          * LF MIN: 20.0f
          */
-            EAXREVERB_HFREFERENCE = 5000.0f,
-            EAXREVERB_LFREFERENCE = 250.0f;
+        EAXREVERB_HFREFERENCE = 5000.0f, EAXREVERB_LFREFERENCE = 250.0f;
 
 
         /**
@@ -343,7 +342,7 @@ public interface EffectFactory {
          *
          * The details under {@link #EAXREVERB_REFLECTIONS_PAN} also apply to Late Reverb Pan.
          */
-            EAXREVERB_LATE_REVERB_PAN = {0.0f,0.0f,0.0f};
+        EAXREVERB_LATE_REVERB_PAN = {0.0f,0.0f,0.0f};
     }
 
     /**
@@ -401,7 +400,7 @@ public interface EffectFactory {
          * MAX: 180
          * MIN: -180
          */
-            CHORUS_PHASE = 90;
+        CHORUS_PHASE = 90;
 
         /**
          * This property sets the modulation rate of the LFO that controls the delay time of the delayed signals.
@@ -417,7 +416,7 @@ public interface EffectFactory {
          * MAX: 1.0f
          * MIN: 0.0f
          */
-            CHORUS_DEPTH = 0.1f,
+        CHORUS_DEPTH = 0.1f,
 
         /**
          * This property controls the amount of processed signal that is fed back to the input of the chorus effect.
@@ -429,7 +428,7 @@ public interface EffectFactory {
          * MAX: 1.0f
          * MIN: -1.0f
          */
-            CHORUS_FEEDBACK = 0.25f,
+        CHORUS_FEEDBACK = 0.25f,
 
         /**
          * This property controls the average amount of time the sample is delayed before it is played back, and with
@@ -441,7 +440,7 @@ public interface EffectFactory {
          * MAX: 0.016f
          * MIN: 0.0f
          */
-            CHORUS_DELAY = 0.016f;          // [0.0f,0.016f]
+        CHORUS_DELAY = 0.016f;          // [0.0f,0.016f]
     }
 
     /**
@@ -470,19 +469,55 @@ public interface EffectFactory {
      * The distortion effect simulates turning up (overdriving) the gain stage on a guitar amplifier or adding a
      * distortion pedal to an instrument’s output.  It is achieved by clipping the signal (adding more square wave-like
      * components) and adding rich harmonics.  The distortion effect could be very useful for adding extra dynamics to
-     * engine sounds in a driving simulator, or modifying samples such as vocal communications. 
+     * engine sounds in a driving simulator, or modifying samples such as vocal communications.
      *
      * Edit properties of a DistortionDef object then use {@link #createDistortion()} or {@link #updateDistortion(EffectFilter, DistortionDef)} )}
      * to transfer properties from DistortionDef to the effect object.
      */
     public class DistortionDef {
-        /** Default Settings for Distortion effects */
-        public float                                    // [] denote the ranges of the values
-                DISTORTION_EDGE = 0.2f,                 // [0.0f,1.0f]
-                DISTORTION_GAIN = 0.05f,                // [0.01f,1.0f]
-                DISTORTION_LOWPASS_CUTOFF = 8000.0f,    // [80.0f,24000.0f]
-                DISTORTION_EQCENTER = 3600.0f,          // [80.0f,24000.0f]
-                DISTORTION_EQBANDWIDTH = 3600.0f;       // [80.0f,24000.0f]
+        //Default Settings for Distortion effects
+
+        /**
+         * This property controls the shape of the distortion. The higher the value for Edge, the ‘dirtier’ and
+         * ‘fuzzier’ the effect.
+         *
+         * MAX: 1.0f
+         * MIN: 0.0f
+         */
+        public float DISTORTION_EDGE = 0.2f,
+
+        /**
+         *  This property allows you to attenuate the distorted sound
+         *
+         *  MAX: 1.0f
+         *  MIN: 0.01f
+         */
+        DISTORTION_GAIN = 0.05f,
+
+        /**
+         * Input signal can have a low pass filter applied, to limit the amount of high frequency signal feeding into
+         * the distortion effect.
+         *
+         * MAX: 24000.0f
+         * MIN: 80.0f
+         */
+        DISTORTION_LOWPASS_CUTOFF = 8000.0f,
+
+        /**
+         * This property controls the frequency at which the post-distortion attenuation (Distortion Gain) is active.
+         *
+         * MAX: 24000.0f
+         * MIN: 80.0f
+         */
+        DISTORTION_EQCENTER = 3600.0f,
+
+        /**
+         * This property controls the bandwidth of the post-distortion attenuation.
+         *
+         * MAX: 24000.0f
+         * MIN: 80.0f
+         */
+        DISTORTION_EQBANDWIDTH = 3600.0f;
     }
 
     /**
@@ -508,17 +543,62 @@ public interface EffectFactory {
     /**
      * This class contains definitions for constructing an echo object
      *
+     * The echo effect generates discrete, delayed instances of the input signal. The amount of delay and feedback is
+     * controllable. The delay is ‘two tap’ – you can control the interaction between two separate instances of echoes.
+     *
      * Edit properties of a EchoDef object then use {@link #createEcho()} or {@link #updateEcho(EffectFilter, EchoDef)} )}
      * to transfer properties from EchoDef to the effect object.
      */
     public class EchoDef {
-        /** Default Settings for Echo effects */
-        public float                        // [] denote the ranges of the values
-                ECHO_DELAY    = 0.1f,       // [0.0f,0.207f]
-                ECHO_LRDELAY  = 0.1f,       // [0.0f, 0.404f]
-                ECHO_DAMPING  = 0.5f,       // [0.0f,0.99f]
-                ECHO_FEEDBACK = 0.5f,       // [0.0f, 1.0f]
-                ECHO_SPREAD   = -1.0f;      // [-1.0f, 1.0f]
+        // Default Settings for Echo effects
+        /**
+         * This property controls the delay between the original sound and the first ‘tap’, or echo instance.
+         * Subsequently, the value for Echo Delay is used to determine the time delay between each ‘second tap’ and
+         * the next ‘first tap’.
+         *
+         * MAX: 0.207f
+         * MIN: 0.0f
+         */
+        public float ECHO_DELAY = 0.1f,
+
+        /**
+         * This property controls the delay between the first ‘tap’ and the second ‘tap’. Subsequently, the value for
+         * Echo LR Delay is used to determine the time delay between each ‘first tap’ and the next ‘second tap’.
+         *
+         * MAX: 0.404f
+         * MIN: 0.0f
+         */
+        ECHO_LRDELAY = 0.1f,
+
+        /**
+         * This property controls the amount of high frequency damping applied to each echo. As the sound is
+         * subsequently fed back for further echoes, damping results in an echo which progressively gets softer in tone
+         * as well as intensity
+         *
+         * MAX: 0.99f
+         * MIN: 0.0f
+         */
+        ECHO_DAMPING = 0.5f,       // [0.0f,0.99f]
+
+        /**
+         * This property controls the amount of feedback the output signal fed back into the input. Use this parameter
+         * to create “cascading” echoes. At full magnitude, the identical sample will repeat endlessly. Below full
+         * magnitude, the sample will repeat and fade.
+         *
+         * MAX: 1.0f
+         * MIN: 0.0f
+         */
+        ECHO_FEEDBACK = 0.5f,
+
+        /**
+         * This property controls how hard panned the individual echoes are. With a value of 1.0, the first ‘tap’ will
+         * be panned hard left, and the second tap hard right.  A value of –1.0 gives the opposite result. Settings
+         * nearer to 0.0 result in less emphasized panning.
+         *
+         * MAX: 1.0f
+         * MIN: -1.0f
+         */
+        ECHO_SPREAD = -1.0f;
     }
 
     /**
@@ -544,20 +624,69 @@ public interface EffectFactory {
     /**
      * This class contains definitions for constructing a flanger object
      *
+     * The flanger effect creates a “tearing” or “whooshing” sound (like a jet flying overhead). It works by sampling
+     * a portion of the input signal, delaying it by a period modulated between 0 and 4ms by a low-frequency
+     * oscillator, and then mixing it with the source signal.
+     *
      * Edit properties of a FlangerDef object then use {@link #createFlanger()} or {@link #updateFlanger(EffectFilter, FlangerDef)} )}
      * to transfer properties from FlangerDef to the effect object.
      */
     public class FlangerDef {
-        /** Default Settings for Flanger effects */
-        public int                              // [] denote the ranges of the values
-                FLANGER_WAVEFORM  = 1,          // [0,1]
-                FLANGER_PHASE     = 0;          // [-180, 180]
+        // Default Settings for Flanger effects
+        /**
+         * Selects the shape of the LFO waveform that controls the amount of the delay of the sampled signal.
+         *
+         * 0: Sinusoid Waveform
+         * 1: Triangle Waveform
+         */
+        public int FLANGER_WAVEFORM = 1,
 
-        public float
-                FLANGER_RATE     = 0.27f,       // [0.0f,10.0f]
-                FLANGER_DEPTH    = 1.0f,        // [0.0f,1.0f]
-                FLANGER_FEEDBACK = -0.5f,       // [-1.0f,1.0f]
-                FLANGER_DELAY    = 0.002f;      //[0.0f,0.004f]
+        /**
+         * This changes the phase difference between the left and right LFO’s.
+         * At zero degrees the two LFOs are synchronized.
+         *
+         * MAX: 180
+         * MIN: -180
+         */
+        FLANGER_PHASE = 0;
+
+        /**
+         * The number of times per second the LFO controlling the amount of delay repeats.
+         * Higher values increase the pitch modulation.
+         *
+         * MAX: 10.0f
+         * MIN: 0.0f
+         */
+        public float FLANGER_RATE = 0.27f,
+
+        /**
+         * The ratio by which the delay time is modulated by the LFO.
+         * Use this parameter to increase the pitch modulation.
+         *
+         * MAX: 1.0f
+         * MIN: 0.0f
+         */
+        FLANGER_DEPTH = 1.0f,
+
+        /**
+         * This is the amount of the output signal level fed back into the effect’s input. A negative value will
+         * reverse the phase of the feedback signal. Use this parameter to create an “intense metallic” effect.
+         * At full magnitude, the identical sample will repeat endlessly. At less than full magnitude, the sample
+         * will repeat and fade out over time.
+         *
+         * MAX: 1.0f
+         * MIN: -1.0f
+         */
+        FLANGER_FEEDBACK = -0.5f,
+
+        /**
+         * The average amount of time the sample is delayed before it is played back; with feedback, the amount of time
+         * between iterations of the sample.
+         *
+         * MAX: 0.004f
+         * MIN: 0.0f
+         */
+        FLANGER_DELAY = 0.002f;
     }
 
     /**
@@ -583,16 +712,38 @@ public interface EffectFactory {
     /**
      * This class contains definitions for constructing a FrequencyShifter object
      *
+     * The frequency shifter is a single-sideband modulator, which translates all the component frequencies of the
+     * input signal by an equal amount. Unlike the pitch shifter, which attempts to maintain harmonic relationships
+     * in the signal, the frequency shifter disrupts harmonic relationships and radically alters the sonic qualities
+     * of the signal. Applications of the frequency shifter include the creation of bizarre distortion, phaser, stereo
+     * widening and rotating speaker effects.
+     *
      * Edit properties of a FreqShiftDef object then use {@link #createFreqShift()} or {@link #updateFreqShift(EffectFilter, FreqShiftDef)} )}
      * to transfer properties from FreqShiftDef to the effect object.
      */
     public class FreqShiftDef {
-        /** Default Settings for frequency shifter effects */
-        public float                                        // [] denote the ranges of the values
-                FREQUENCY_SHIFTER_FREQUENCY = 0.0f;         //[0.0f,24000.0f]
-        public int                                          // For the two options below: DOWN = 0, UP = 1, OFF = 2
-                FREQUENCY_SHIFTER_LEFT_DIRECTION  = 0,      // [0,2]
-                FREQUENCY_SHIFTER_RIGHT_DIRECTION = 0;      // [0,2]
+        // Default Settings for frequency shifter effects
+
+        /**
+         * This is the carrier frequency. For carrier frequencies below the audible range, the single-sideband
+         * modulator may produce phaser effects, spatial effects or a slight pitch-shift. As the carrier frequency
+         * increases, the timbre of the sound is affected; a piano or guitar note becomes like a bell's chime, and a
+         * human voice sounds extraterrestrial!
+         *
+         * MAX: 24000.0f
+         * MIN: 0.0f
+         */
+        public float FREQUENCY_SHIFTER_FREQUENCY = 0.0f;
+
+        /**
+         * These select which internal signals are added together to produce the output. Different combinations of
+         * values will produce slightly different tonal and spatial effects.
+         *
+         * 0: Down
+         * 1: Up
+         * 2: Off
+         */
+        public int FREQUENCY_SHIFTER_LEFT_DIRECTION  = 0, FREQUENCY_SHIFTER_RIGHT_DIRECTION = 0;
     }
 
     /**
@@ -618,51 +769,58 @@ public interface EffectFactory {
     /**
      * This class contains definitions for constructing a VocalMorpher object
      *
+     * The vocal morpher consists of a pair of 4-band formant filters, used to impose vocal tract effects upon the
+     * input signal. If the input signal is a broadband sound such as pink noise or a car engine, the vocal morpher
+     * can provide a wide variety of filtering effects. A low-frequency oscillator can be used to morph the filtering
+     * effect between two different phonemes. The vocal morpher is not necessarily intended for use on voice signals;
+     * it is primarily intended for pitched noise effects, vocal-like wind effects, etc.
+     *
      * Edit properties of a VocalMorpherDef object then use {@link #createVocalMorpher()} or {@link #updateVocalMorpher(EffectFilter, VocalMorpherDef)} )}
      * to transfer properties from VocalMorpherDef to the effect object.
      */
     public class VocalMorpherDef {
-        /** Default Settings for vocal morpher effects */
-        public float                            // [] denote the ranges of the values
-                VOCAL_MORPHER_RATE = 1.41f;     // [0.0f,10.0f]
-        public int
-                /*  For the four options below:
-                    AL_VOCAL_MORPHER_PHONEME_A                      = 0,
-                    AL_VOCAL_MORPHER_PHONEME_E                      = 1,
-                    AL_VOCAL_MORPHER_PHONEME_I                      = 2,
-                    AL_VOCAL_MORPHER_PHONEME_O                      = 3,
-                    AL_VOCAL_MORPHER_PHONEME_U                      = 4,
-                    AL_VOCAL_MORPHER_PHONEME_AA                     = 5,
-                    AL_VOCAL_MORPHER_PHONEME_AE                     = 6,
-                    AL_VOCAL_MORPHER_PHONEME_AH                     = 7,
-                    AL_VOCAL_MORPHER_PHONEME_AO                     = 8,
-                    AL_VOCAL_MORPHER_PHONEME_EH                     = 9,
-                    AL_VOCAL_MORPHER_PHONEME_ER                     = 10,
-                    AL_VOCAL_MORPHER_PHONEME_IH                     = 11,
-                    AL_VOCAL_MORPHER_PHONEME_IY                     = 12,
-                    AL_VOCAL_MORPHER_PHONEME_UH                     = 13,
-                    AL_VOCAL_MORPHER_PHONEME_UW                     = 14,
-                    AL_VOCAL_MORPHER_PHONEME_B                      = 15,
-                    AL_VOCAL_MORPHER_PHONEME_D                      = 16,
-                    AL_VOCAL_MORPHER_PHONEME_F                      = 17,
-                    AL_VOCAL_MORPHER_PHONEME_G                      = 18,
-                    AL_VOCAL_MORPHER_PHONEME_J                      = 19,
-                    AL_VOCAL_MORPHER_PHONEME_K                      = 20,
-                    AL_VOCAL_MORPHER_PHONEME_L                      = 21,
-                    AL_VOCAL_MORPHER_PHONEME_M                      = 22,
-                    AL_VOCAL_MORPHER_PHONEME_N                      = 23,
-                    AL_VOCAL_MORPHER_PHONEME_P                      = 24,
-                    AL_VOCAL_MORPHER_PHONEME_R                      = 25,
-                    AL_VOCAL_MORPHER_PHONEME_S                      = 26,
-                    AL_VOCAL_MORPHER_PHONEME_T                      = 27,
-                    AL_VOCAL_MORPHER_PHONEME_V                      = 28,
-                    AL_VOCAL_MORPHER_PHONEME_Z                      = 29,
-                */
-                VOCAL_MORPHER_PHONEMEA               = 0,   // [0,29]
-                VOCAL_MORPHER_PHONEMEA_COARSE_TUNING = 0,   // [-24,24]
-                VOCAL_MORPHER_PHONEMEB               = 10,  // [0,29]
-                VOCAL_MORPHER_PHONEMEB_COARSE_TUNING = 0,   // [-24,24]
-                VOCAL_MORPHER_WAVEFORM               = 0;   // [0,2]
+        // Default Settings for vocal morpher effects
+
+        /**
+         * This controls the frequency of the low-frequency oscillator used to morph between the two phoneme filters
+         *
+         * MAX: 10.0f
+         * MIN: 0.0f
+         */
+        public float VOCAL_MORPHER_RATE = 1.41f;
+
+        /**
+         * If both parameters are set to the same phoneme, that determines the filtering effect that will be heard.
+         * If these two parameters are set to different phonemes, the filtering effect will morph between the two
+         * settings at a rate specified by AL_VOCAL_MORPHER_RATE.
+         *
+         *
+         * Below are the available phoneme types:
+         * A = 0, E = 1, I = 2, O = 3, U = 4, AA = 5,AE = 6, AH = 7, AO = 8, EH = 9, ER = 10, IH = 11, IY = 12,
+         * UH = 13, UW = 14, B = 15, D = 16, F = 17, G = 18, J = 19, K = 20, L = 21, M = 22, N = 23, P = 24, R = 25,
+         * S = 26, T = 27, V = 28, Z = 29
+         */
+        public int VOCAL_MORPHER_PHONEMEA = 0, VOCAL_MORPHER_PHONEMEB = 10;
+
+        /**
+         * These are used to adjust the pitch of phoneme filters A and B in 1-semitone increments.
+         *
+         * MAX: 24
+         * MIN: -24
+         * */
+        public int VOCAL_MORPHER_PHONEMEA_COARSE_TUNING = 0, VOCAL_MORPHER_PHONEMEB_COARSE_TUNING = 0;
+
+        /**
+         * This controls the shape of the low-frequency oscillator used to morph between the two phoneme filters.
+         * By selecting a saw tooth wave and a slow AL_VOCAL_MORPHER_RATE, one can create a filtering effect that
+         * slowly increases or decreases in pitch (depending on which of the two phoneme filters A or B is perceived
+         * as being higher-pitched).
+         *
+         * 0: Sin
+         * 1: Triangle
+         * 2: Saw
+         */
+         public int VOCAL_MORPHER_WAVEFORM = 0;
     }
 
     /**
@@ -688,14 +846,31 @@ public interface EffectFactory {
     /**
      * This class contains definitions for constructing a Pitch Shifter object
      *
+     * The pitch shifter applies time-invariant pitch shifting to the input signal, over a one octave range and
+     * controllable at a semi-tone and cent resolution.
+     *
      * Edit properties of a PitchShifterDef object then use {@link #createPitchShifter()} or {@link #updatePitchShifter(EffectFilter, PitchShifterDef)} )}
      * to transfer properties from PitchShifterDef to the effect object.
      */
     public class PitchShifterDef {
-        /** Default Settings for pitch shifter effects */
-        public int                                          // [] denote the ranges of the values
-                AL_PITCH_SHIFTER_DEFAULT_COARSE_TUNE = 12,  // [-12,12]
-                AL_PITCH_SHIFTER_DEFAULT_FINE_TUNE   = 0;   // [-50,50]
+        // Default Settings for pitch shifter effects
+        /**
+         * This sets the number of semitones by which the pitch is shifted. There are 12 semitones per octave.
+         * Negative values create a downwards shift in pitch, positive values pitch the sound upwards.
+         *
+         * MAX: 12
+         * MIN: -12
+         */
+        public int AL_PITCH_SHIFTER_DEFAULT_COARSE_TUNE = 12,
+
+        /**
+         * This sets the number of cents between Semitones a pitch is shifted. A Cent is 1/100th of a Semitone.
+         * Negative values create a downwards shift in pitch, positive values pitch the sound upwards.
+         *
+         * MAX: 50
+         * MIN: -50
+         */
+        AL_PITCH_SHIFTER_DEFAULT_FINE_TUNE   = 0;   // [-50,50]
     }
 
     /**
@@ -721,17 +896,44 @@ public interface EffectFactory {
     /**
      * This class contains definitions for constructing a Ring Modulator object
      *
+     * The ring modulator multiplies an input signal by a carrier signal in the time domain,
+     * resulting in tremolo or inharmonic effects.
+     *
      * Edit properties of a RingModDef object then use {@link #createRingMod()} or {@link #updateRingMod(EffectFilter, RingModDef)} )}
      * to transfer properties from RingModDef to the effect object.
      */
     public class RingModDef {
-        /** Default Settings for ring modulator effects */
-        public float                                        // [] denote the ranges of the values
-                RING_MODULATOR_FREQUENCY       = 440.0f,    // [0.0f,8000.0f]
-                RING_MODULATOR_HIGHPASS_CUTOFF = 800.0f;    // [0.0f,24000.0f]
+        // Default Settings for ring modulator effects
+        /**
+         * This is the frequency of the carrier signal. If the carrier signal is slowly varying (less than 20 Hz),
+         * the result is a tremolo (slow amplitude variation) effect. If the carrier signal is in the audio range,
+         * audible upper and lower sidebands begin to appear, causing an inharmonic effect. The carrier signal itself
+         * is not heard in the output.
+         *
+         * MAX: 8000.0f
+         * MIN: 0.0f
+         */
+        public float RING_MODULATOR_FREQUENCY = 440.0f,
 
-        public int
-                RING_MODULATOR_WAVEFORM = 0;                // [0,2]
+        /**
+         * This controls the cutoff frequency at which the input signal is high-pass filtered before being ring
+         * modulated. If the cutoff frequency is 0, the entire signal will be ring modulated. If the cutoff frequency
+         * is high, very little of the signal (only those parts above the cutoff) will be ring modulated.
+         *
+         * MAX: 24000.0f
+         * MIN: 0.0f
+         */
+        RING_MODULATOR_HIGHPASS_CUTOFF = 800.0f;
+
+        /**
+         * This controls which waveform is used as the carrier signal. Traditional ring modulator and tremolo effects
+         * generally use a sinusoidal carrier. Sawtooth and square waveforms are may cause unpleasant aliasing.
+         *
+         * 0: Sin
+         * 1: Triangle
+         * 2: Square
+         */
+        public int RING_MODULATOR_WAVEFORM = 0;
     }
 
     /**
@@ -758,16 +960,53 @@ public interface EffectFactory {
     /**
      * This class contains definitions for constructing a AutoWAH object
      *
+     * The Auto-wah effect emulates the sound of a wah-wah pedal used with an electric guitar, or a mute on a brass
+     * instrument. Such effects allow a musician to control the tone of their instrument by varying the point at which
+     * high frequencies are cut off. This OpenAL Effects Extension effect is called Auto-wah because there is no user
+     * input for modulating the cut-off point. Instead the effect is achieved by analysing the input signal, and
+     * applying a band-pass filter according the intensity of the incoming audio.
+     *
      * Edit properties of a AutoWAHDef object then use {@link #createAutoWAH()} or {@link #updateAutoWAH(EffectFilter, AutoWAHDef)} )}
      * to transfer properties from AutoWAHDef to the effect object.
      */
     public class AutoWAHDef {
-        /** Default Settings for AutoWAH effects */
-        public float                            // [] denote the ranges of the values
-                AUTOWAH_ATTACK_TIME  = 0.06f,   // [1.0E-4f,1.0f]
-                AUTOWAH_RELEASE_TIME = 0.06f,   // [1.0E-4f,1.0f]
-                AUTOWAH_RESONANCE    = 1000.0f, // [2.0f,1000.0f]
-                AUTOWAH_PEAK_GAIN    = 11.22f;  // [3.0E-5f,31621.0]
+        // Default Settings for AutoWAH effects
+
+        /**
+         * This property controls the time the filtering effect takes to sweep from minimum to maximum center frequency
+         * when it is triggered by input signal.
+         *
+         * MAX: 1.0f
+         * MIN: 0.0001f
+         */
+        public float AUTOWAH_ATTACK_TIME  = 0.06f,
+
+        /**
+         * This property controls the time the filtering effect takes to sweep from maximum back to base center
+         * frequency, when the input signal ends.
+         *
+         * MAX: 1.0f
+         * MIN: 0.0001f
+         */
+        AUTOWAH_RELEASE_TIME = 0.06f,
+
+        /**
+         * This property controls the resonant peak, sometimes known as emphasis or Q, of the auto-wah band-pass
+         * filter. Resonance occurs when the effect boosts the frequency content of the sound around the point at which
+         * the filter is working.  A high value promotes a highly resonant, sharp sounding effect.
+         *
+         * MAX: 1000.0
+         * MIN: 2.0
+         */
+        AUTOWAH_RESONANCE = 1000.0f,
+
+        /**
+         * This property controls the input signal level at which the band-pass filter will be fully opened.
+         *
+         * MAX: 31621.0
+         * MIN: 0.00003
+         */
+        AUTOWAH_PEAK_GAIN = 11.22f;
     }
 
     /**
@@ -793,13 +1032,25 @@ public interface EffectFactory {
     /**
      * This class contains definitions for constructing a Compressor object
      *
+     * The Automatic Gain Control effect performs the same task as a studio compressor – evening out the audio dynamic
+     * range of an input sound. This results in audio exhibiting smaller variation in intensity between the loudest
+     * and quietest portions. The AGC Compressor will boost quieter portions of the audio, while louder portions will
+     * stay the same or may even be reduced. The Compressor effect cannot be tweaked in depth – it can just be
+     * switched on and off.
+     *
      * Edit properties of a CompressorDef object then use {@link #createCompressor()} or {@link #updateCompressor(EffectFilter, CompressorDef)} )}
      * to transfer properties from CompressorDef to the effect object.
      */
     public class CompressorDef {
-        /** Default Settings for Compressor effects */
-        public float                                // [] denote the ranges of the values
-                AL_COMPRESSOR_DEFAULT_ONOFF = 1;    // [0,1]
+        // Default Settings for Compressor effects
+
+        /**
+         * The OpenAL Effect Extension Compressor can only be switched on and off – it cannot be adjusted.
+         *
+         * 0: Off
+         * 1: On
+         */
+        public float AL_COMPRESSOR_DEFAULT_ONOFF = 1;
     }
 
     /**
@@ -823,28 +1074,100 @@ public interface EffectFactory {
     public void updateCompressor(EffectFilter Compressor, CompressorDef def);
 
     /**
-     * This class contains definitions for constructing a Equalizer object
+     * This class contains definitions for constructing an Equalizer object
+     *
+     * The OpenAL Effects Extension EQ is very flexible, providing tonal control over four different adjustable
+     * frequency ranges. The lowest frequency range is called “low.” The middle ranges are called “mid1” and “mid2.”
+     * The high range is called “high.”
      *
      * Edit properties of a EqualizerDef object then use {@link #createEqualizer()} or {@link #updateEqualizer(EffectFilter, EqualizerDef)} )}
      * to transfer properties from EqualizerDef to the effect object.
      */
     public class EqualizerDef {
-        /** Default Settings for Equalizer effects */
-        public float                                // [] denote the ranges of the values
-                EQUALIZER_LOW_GAIN    = 1.0f,       // [0.126f,7.943f]
-                EQUALIZER_LOW_CUTOFF  = 200.0f,     // [50.0f, 800.0f]
-                EQUALIZER_MID1_GAIN   = 1.0f,       // [0.126f,7.943f]
-                EQUALIZER_MID1_CENTER = 500.0f,     // [200.0f,3000.0f]
-                EQUALIZER_MID1_WIDTH  = 1.0f,       // [0.01f,1.0f]
-                EQUALIZER_MID2_GAIN   = 1.0f,       // [0.126f,7.943f]
-                EQUALIZER_MID2_CENTER = 3000.0f,    // [1000.0f,8000.0f]
-                EQUALIZER_MID2_WIDTH  = 1.0f,       // [0.01f,1.0f]
-                EQUALIZER_HIGH_GAIN   = 1.0f,       // [0.126f,7.943f]
-                EQUALIZER_HIGH_CUTOFF = 6000.0f;    // [4000.0f,16000.0f]
+        // Default Settings for Equalizer effects
+        /**
+         * This property controls amount of cut or boost on the low frequency range.
+         *
+         * MAX: 7.943f
+         * MIN: 0.126f
+         */
+        public float EQUALIZER_LOW_GAIN = 1.0f,
+
+        /**
+         * This property controls the low frequency below which signal will be cut off.
+         *
+         * MAX: 800.0f
+         * MIN: 50.0f
+         */
+        EQUALIZER_LOW_CUTOFF = 200.0f,
+
+        /**
+         * This property allows you to cut / boost signal on the “mid1” range.
+         *
+         * MAX: 7.943f
+         * MIN: 0.126f
+         */
+        EQUALIZER_MID1_GAIN = 1.0f,
+
+        /**
+         * This property sets the center frequency for the “mid1” range.
+         *
+         * MAX: 3000.0f
+         * MIN: 200.0f
+         */
+        EQUALIZER_MID1_CENTER = 500.0f,
+
+        /**
+         * This property controls the width of the “mid1” range.
+         *
+         * MAX: 1.0f
+         * MIN: 0.01f
+         */
+        EQUALIZER_MID1_WIDTH = 1.0f,
+
+        /**
+         * This property allows you to cut / boost signal on the “mid2” range.
+         *
+         * MAX: 7.943f
+         * MIN: 0.126f
+         */
+        EQUALIZER_MID2_GAIN = 1.0f,
+
+        /**
+         * This property sets the center frequency for the “mid2” range.
+         *
+         * MAX: 8000.0f
+         * MIN: 1000.0f
+         */
+        EQUALIZER_MID2_CENTER = 3000.0f,
+
+        /**
+         * This property controls the width of the “mid2” range.
+         *
+         * MAX: 1.0f
+         * MIN: 0.01f
+         */
+        EQUALIZER_MID2_WIDTH = 1.0f,
+
+        /**
+         * This property allows you to cut / boost the signal at high frequencies.
+         *
+         * MAX: 7.943f
+         * MIN: 0.126f
+         */
+        EQUALIZER_HIGH_GAIN = 1.0f,
+
+        /**
+         * This property controls the high frequency above which signal will be cut off.
+         *
+         * MAX: 16000.0f
+         * MIN: 4000.0f
+         */
+        EQUALIZER_HIGH_CUTOFF = 6000.0f;    // [4000.0f,16000.0f]
     }
 
     /**
-     * Create a Equalizer effect object based on the EqualizerDef object
+     * Create an Equalizer effect object based on the EqualizerDef object
      *
      * @param def the EqualizerDef object to create from
      */
