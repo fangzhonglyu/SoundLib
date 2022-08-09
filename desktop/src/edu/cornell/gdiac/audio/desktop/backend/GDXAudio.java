@@ -1,15 +1,17 @@
 /*
- * GDXApp.java
+ * GDXAudio.java
  *
  * This is a complete rewrite of OpenALAudio. It only subclasses for polymorphism reasons.  
  * It is an attempt to provide more features to the students who have been struggling 
  * with this awful audio engine for years.  If you want a real audio engine with DSP
  * graphs, cross-fade support, and 7.1+ surround sound, take the advanced class.
  *
- * @author Walker M. White
+ * This is ported from the lwjgl2 version, with additional support for external sound effects.
+ *
+ * @author Walker M. White, Barry Lyu
  * @data   4/16/20
  */
-package edu.cornell.gdiac.backend;
+package edu.cornell.gdiac.audio.desktop.backend;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ApplicationListener;
@@ -24,6 +26,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.*;
 import edu.cornell.gdiac.audio.*;
 import edu.cornell.gdiac.audio.EffectFactory;
+import edu.cornell.gdiac.audio.desktop.backend.audio.*;
 import edu.cornell.gdiac.backend.audio.*;
 import lwjgl3.LWJGLUtil;
 import org.lwjgl.BufferUtils;
@@ -32,7 +35,6 @@ import org.lwjgl.openal.*;
 
 import java.lang.reflect.Method;
 import java.nio.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.lwjgl.openal.AL10.*;
@@ -258,6 +260,21 @@ public class GDXAudio implements AudioEngine {
     public void unloadEffect(int slot){
         alAuxiliaryEffectSloti(auxiliaryEfxSlots[slot],AL_EFFECTSLOT_EFFECT,AL_EFFECT_NULL);
         slotInUse[slot]=false;
+    }
+
+    /**
+     * Reload an effect into an effect slot.
+     *
+     * Mostly used when an effect is updated, this will allow live update of effect parameters when sound source
+     * are actively using the effect.
+     *
+     * @param effect the effect to reload
+     */
+    public void reloadEffect(EffectFilter effect){
+        int slot = ((Effect)effect).slot;
+        if(slot != -1){
+            alAuxiliaryEffectSloti(auxiliaryEfxSlots[slot],AL_EFFECTSLOT_EFFECT,((Effect)effect).getId());
+        }
     }
 
     /**
@@ -669,7 +686,7 @@ public class GDXAudio implements AudioEngine {
 
     @Override
     public EffectFactory getEffectFactory() {
-        return new edu.cornell.gdiac.backend.EffectFactory();
+        return new edu.cornell.gdiac.audio.desktop.backend.EffectFactory();
     }
 
     // #mark OpenAL Source Controls
@@ -1981,6 +1998,7 @@ public class GDXAudio implements AudioEngine {
         public synchronized void resume() {
             resumeSource(sourceId);
             isPlaying = true;
+            updateEffect();
         }
         
         
@@ -2189,7 +2207,8 @@ public class GDXAudio implements AudioEngine {
                     break;
                 }
             }
-            updateEffect();
+            if(isPlaying)
+                updateEffect();
         }
 
         /**
@@ -2204,7 +2223,8 @@ public class GDXAudio implements AudioEngine {
                     break;
                 }
             }
-            updateEffect();
+            if(isPlaying)
+                updateEffect();
         }
 
         /**
@@ -2212,7 +2232,8 @@ public class GDXAudio implements AudioEngine {
          * */
         public void clearAllEffect(){
             Arrays.fill(effects, null);
-            updateEffect();
+            if(isPlaying)
+                updateEffect();
         }
 
         /** 
@@ -3019,6 +3040,13 @@ public class GDXAudio implements AudioEngine {
          * Allocates the OpenAL buffers to use for this device
          */
         private void allocBuffers() {
+            System.out.println("allocating a buffer");
+            try{
+                throw new RuntimeException();
+            }
+            catch (RuntimeException e){
+                e.printStackTrace();
+            }
             if (allBuffers == null) {
                 usedBuffers = new IntIntMap();
                 allBuffers = BufferUtils.createIntBuffer( bufferCount );

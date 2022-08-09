@@ -16,7 +16,7 @@
 
 // WMW2: This class is (mostly) unmodified from com.badlogic.gdx.backends.lwjgl.audio;
 
-package edu.cornell.gdiac.backend.audio;
+package edu.cornell.gdiac.audio.desktop.backend.audio;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.GdxRuntimeException;

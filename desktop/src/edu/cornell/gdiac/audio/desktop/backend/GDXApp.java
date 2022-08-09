@@ -7,12 +7,11 @@
  * @author Walker M. White
  * @data April 10, 2020
  */
-package edu.cornell.gdiac.backend;
+package edu.cornell.gdiac.audio.desktop.backend;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ApplicationListener;
 import lwjgl3.Lwjgl3Application;
-import lwjgl3.Lwjgl3ApplicationConfiguration;
 
 /**
  * This class represents a desktop game application using Lwjgl.

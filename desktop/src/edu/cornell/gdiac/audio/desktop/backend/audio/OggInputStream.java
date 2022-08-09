@@ -22,7 +22,7 @@
 
 // WMW2: This class is unmodified from com.badlogic.gdx.backends.lwjgl.audio;
 
-package edu.cornell.gdiac.backend.audio;
+package edu.cornell.gdiac.audio.desktop.backend.audio;
 
 import java.io.IOException;
 import java.io.InputStream;

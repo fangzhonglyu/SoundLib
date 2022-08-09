@@ -1,4 +1,4 @@
-package edu.cornell.gdiac.backend;
+package edu.cornell.gdiac.audio.desktop.backend;
 
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 

@@ -4,7 +4,7 @@ package edu.cornell.gdiac.audio;
  * This class represents external sound effects in OpenAL,
  * they can be applied to a sound or music instance to generate additional effects.
  *
- * Effects need to be disposed with {@link #dispose()}
+ * Effects need to be disposed with {@link #dispose()} when done using.
  *
  **/
 

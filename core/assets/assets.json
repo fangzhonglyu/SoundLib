@@ -23,7 +23,8 @@
         "failurewav": "Failure.wav",
         "failureogg": "Failure.ogg",
         "failuremp3": "Failure.mp3",
-        "dodgemp3": "Dodge.mp3"
+        "dodgemp3": "Dodge.mp3",
+        "key18": "key18.ogg"
     },
     "music": {
         "twofer": {
