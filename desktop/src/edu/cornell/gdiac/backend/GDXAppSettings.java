@@ -7,12 +7,13 @@
  * @author Walker M. White
  * @data April 10, 2020
  */
-package edu.cornell.gdiac.audio.desktop.backend;
+package edu.cornell.gdiac.backend;
 
 import com.badlogic.gdx.LifecycleListener;
 import com.badlogic.gdx.Graphics;
 import lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
+import lwjgl3.Lwjgl3Graphics;
 
 /**
  * This class configures the launch settings for an instance of {@link GDXApp}.

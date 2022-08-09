@@ -1,12 +1,3 @@
-/*
- * EffectFactory.java
- *
- * This is the interface for the factory class for creating effect filters
- *
- * @author Barry Lyu
- * @date   6/25/22
- */
-
 package edu.cornell.gdiac.audio;
 
 /**
@@ -15,6 +6,7 @@ package edu.cornell.gdiac.audio;
  * The following openAL effects are supported,
  * for more details on effect parameters, see openAL
  *
+ *  AL_EFFECT_NULL
  *  AL_EFFECT_REVERB
  *  AL_EFFECT_CHORUS
  *  AL_EFFECT_DISTORTION
@@ -34,16 +26,13 @@ public interface EffectFactory {
     /**
      * This class contains definitions for constructing a reverberation sound effect
      *
-     * Reverb lets you transport a listener to a concert hall, a cave, a cathedral, or an intimate performance space.
-     * It also allows for natural (or added) harmonics of a sound source to shine through and gives your mix extra
-     * warmth and space
-     *
      * Edit properties of a ReverbDef object then use {@link #createReverb()} or {@link #updateReverb(EffectFilter, ReverbDef)}
      * to transfer properties from ReverbDef to the effect object.
      */
     public class ReverbDef {
 
         // Below are the default Settings for reverb effects
+        // [] denote the ranges of the values
 
         /**
          * Reverb density controls the coloration of the late reverb.
@@ -211,8 +200,8 @@ public interface EffectFactory {
      * reverb directivity, and reverb granularity.
      *
      * The EAX Reverb is natively supported on any devices that support the EAX 3.0 or above standard, including:
-     *   SoundBlaster Audigy series soundcards
-     *   SoundBlaster X-Fi series soundcards
+     * SoundBlaster Audigy series soundcards
+     * SoundBlaster X-Fi series soundcards
      *
      * The EAX Reverb will be emulated on devices that only support EAX 2.0. Note: The “Generic Software” device falls
      * into this category as the software mixer supports the EAX 2.0 Reverb effect.
@@ -247,7 +236,7 @@ public interface EffectFactory {
          * MAX: 1.0f (0db)
          * MIN: 0.0f (-100db)
          */
-        public float EAXREVERB_GAINLF = 1.0f,
+        public float EAXREVERB_GAINLF = 1.0f,                    // [0.0f,1.0f]
 
         /**
          * The Decay LF Ratio property adjusts the spectral quality of the Decay Time parameter.
@@ -294,7 +283,7 @@ public interface EffectFactory {
          * MAX: 4.0f
          * MIN: 0.04f
          */
-        EAXREVERB_MODULATION_TIME = 0.25f,
+        EAXREVERB_MODULATION_TIME = 0.25f,          // [0.04f,4.0f]
 
         /**
          * Modulation Depth controls the amount of pitch change. Low values of Diffusion will contribute to reinforcing
@@ -303,7 +292,7 @@ public interface EffectFactory {
          * MAX: 1.0f
          * MIN: 0.0f
          */
-        EAXREVERB_MODULATION_DEPTH = 0.0f,
+        EAXREVERB_MODULATION_DEPTH = 0.0f,          // [0.0f,1.0f]
 
         /**
          * The properties HF Reference and LF Reference determine respectively the frequencies at which the
@@ -357,7 +346,7 @@ public interface EffectFactory {
     }
 
     /**
-     * Create a EAXReverb effect object based on the EAXReverbDef object
+     * Create a EAXReverb effect object based on the ReverbDef object
      *
      * @param def the EAXReverbDef object to create from
      */
@@ -372,7 +361,7 @@ public interface EffectFactory {
      * Update an existing EAXReverb effect based on the EAXReverbDef
      *
      * @param eaxReverb the EaxReverb effect to edit
-     * @param def the EAxReverbDef object to create from
+     * @param def       the EAxReverbDef object to create from
      */
     public void updateEAXReverb(EffectFilter eaxReverb, EAXReverbDef def);
 
@@ -393,6 +382,7 @@ public interface EffectFactory {
     public class ChorusDef {
 
         // Default Settings for Chorus effects
+        // [] denote the ranges of the values
         /**
          * This property sets the waveform shape of the LFO that controls the delay time of the delayed signals.
          * THIS IS EITHER 0 or 1
@@ -450,7 +440,7 @@ public interface EffectFactory {
          * MAX: 0.016f
          * MIN: 0.0f
          */
-        CHORUS_DELAY = 0.016f;
+        CHORUS_DELAY = 0.016f;          // [0.0f,0.016f]
     }
 
     /**
@@ -468,8 +458,8 @@ public interface EffectFactory {
     /**
      * Update an existing chorus effect based on the ChorusDef
      *
-     * @param chorus the chorus effect to edit
-     * @param def the ChorusDef object to create from
+     * @param chorus    the chorus effect to edit
+     * @param def       the ChorusDef object to create from
      */
     public void updateChorus(EffectFilter chorus, ChorusDef def);
 
@@ -588,7 +578,7 @@ public interface EffectFactory {
          * MAX: 0.99f
          * MIN: 0.0f
          */
-        ECHO_DAMPING = 0.5f,
+        ECHO_DAMPING = 0.5f,       // [0.0f,0.99f]
 
         /**
          * This property controls the amount of feedback the output signal fed back into the input. Use this parameter
@@ -700,7 +690,7 @@ public interface EffectFactory {
     }
 
     /**
-     * Create a Flanger effect object based on the FlangerDef object
+     * Create an Flanger effect object based on the FlangerDef object
      *
      * @param def the FlangerDef object to create from
      */
@@ -880,7 +870,7 @@ public interface EffectFactory {
          * MAX: 50
          * MIN: -50
          */
-        AL_PITCH_SHIFTER_DEFAULT_FINE_TUNE   = 0;
+        AL_PITCH_SHIFTER_DEFAULT_FINE_TUNE   = 0;   // [-50,50]
     }
 
     /**
@@ -1173,7 +1163,7 @@ public interface EffectFactory {
          * MAX: 16000.0f
          * MIN: 4000.0f
          */
-        EQUALIZER_HIGH_CUTOFF = 6000.0f;
+        EQUALIZER_HIGH_CUTOFF = 6000.0f;    // [4000.0f,16000.0f]
     }
 
     /**

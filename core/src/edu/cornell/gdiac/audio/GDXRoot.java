@@ -1,4 +1,4 @@
-package edu.cornell.gdiac;
+package edu.cornell.gdiac.audio;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.audio.AudioDevice;
@@ -9,8 +9,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Timer;
 import edu.cornell.gdiac.assets.*;
-import edu.cornell.gdiac.audio.*;
-import edu.cornell.gdiac.audio.EffectFactory.*;
 
 public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnCompletionListener, Music.OnCompletionListener, MusicQueue.OnTransitionListener {
 	SpriteBatch batch;
@@ -24,9 +22,13 @@ public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnComplet
 	MusicQueue music1;
 	MusicQueue music2;
 	MusicQueue music3;
+
+	AudioDevice device;
+	AudioSource sample;
 	AudioEngine engine;
 	long first = -1L;
 	AssetDirectory manager;
+
 
 	private class KeyHandler extends InputAdapter {
 		long soundId;
@@ -34,32 +36,20 @@ public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnComplet
 		boolean music1Chorus = false, music1Echo = false;
 		EffectFactory f = engine.getEffectFactory();
 		EffectFilter s = f.createChorus();
-		EffectFilter s2 = f.createEAXReverb();
-		EffectFilter s3 = f.createAutoWAH();
-		FlangerDef fDef = new FlangerDef();
-
-		EffectFilter s4 = f.createFlanger();
+		EffectFilter s2 = f.createEcho();
 
 		@Override
 		public boolean keyDown(int keycode) {
 			System.out.println("Checking key "+keycode);
-			EffectFilter dsafd = f.createCompressor();
 			switch (keycode) {
 				case Input.Keys.NUM_1:
 					if (sound1 != null) {
 						System.out.println("Playing sound 1");
 						first = sound1.play();
-						sound1.addEffect(first,s4);
 					}
 					return true;
 				case Input.Keys.NUM_2:
-					fDef.FLANGER_FEEDBACK = 0.5f;
-					fDef.FLANGER_RATE = 10.0f;
-					f.updateFlanger(s4,fDef);
-
-					/*
-					if (music1 != null ) {
-
+					if (music1 != null) {
 						if(music1Chorus) {
 							music1.removeEffect(s);
 							music1Chorus = false;
@@ -69,8 +59,6 @@ public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnComplet
 							music1Chorus = true;
 						}
 					}
-
-					 */
 					return true;
 				case Input.Keys.NUM_3:
 					if (music1 != null) {
@@ -111,6 +99,7 @@ public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnComplet
 								if (music1.getNumberOfSources() > 0) {
 									music1.clearSources();
 								}
+								music1.addSource( sample );
 								System.out.println("Reseting to "+position);
 								music1.setPosition( position );
 								music1.play();
@@ -137,6 +126,19 @@ public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnComplet
 		manager = new AssetDirectory("assets.json");
 		manager.loadAssets();
 		engine = (AudioEngine)Gdx.audio;
+		sample = engine.newSource( Gdx.files.internal( "Dodge.ogg" ) );
+		//TextureRegionLoader.TextureRegionParameters params = new TextureRegionLoader.TextureRegionParameters("badlogic.jpg"  );
+		//params.x = 128;
+		//params.width = 128;
+		//manager.load( "badlogic.jpg:all",TextureRegion.class, params);
+
+		//MusicBufferLoader.MusicBufferParameters mbparams = new MusicBufferLoader.MusicBufferParameters(true,0);
+		//mbparams.sources.add("Dodge.wav");
+		//mbparams.sources.add("Failure.wav");
+		//mbparams.looping = true;
+		//mbparams.shortLoop = true;
+		//manager.load(  "themusic", MusicBuffer.class, mbparams);
+		//manager.load( "assets.json",JsonValue.class );
 
 		//manager.load("MarkerFelt.ttf", BitmapFont.class );
 		manager.finishLoading();
@@ -145,14 +147,15 @@ public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnComplet
 		//reg = manager.get("badlogic.jpg:all",TextureRegion.class);
 		//System.out.println(manager.get("assets.json",JsonValue.class));
 
+		AudioEngine audio = (AudioEngine)Gdx.audio;
 
-		sound1 = manager.getEntry("key18", SoundEffect.class);
+		sound1 = manager.getEntry("failurewav", SoundEffect.class);
 		sound2 = manager.getEntry("dodgemp3", SoundEffect.class);
 		sound3 = manager.getEntry("failuremp3", SoundEffect.class);
 		//music1 = manager.getEntry("twofer", MusicQueue.class);
-		music1 = engine.newMusic( Gdx.files.internal("Dodge.wav" ));
-		music2 = engine.newMusic( Gdx.files.internal("Failure.ogg" ));
-		music3 = engine.newMusic( Gdx.files.internal("Failure.mp3" ));
+		music1 = audio.newMusic( Gdx.files.internal("Dodge.wav" ));
+		music2 = audio.newMusic( Gdx.files.internal("Failure.ogg" ));
+		music3 = audio.newMusic( Gdx.files.internal("Failure.mp3" ));
 		Gdx.input.setInputProcessor( new KeyHandler() );
 
 		//music1.addSource( audio.newSource( Gdx.files.internal("Failure.wav" ) ) )
@@ -172,21 +175,22 @@ public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnComplet
 		music1.setLoopBehavior( true );
 		System.out.println("Duration :" + music1.getDuration());
 		music1.setVolume(1);
-		EffectFactory f = engine.getEffectFactory();
+
+		EffectFactory f = audio.getEffectFactory();
 		EffectFilter flanger = f.createFlanger();
 		EffectFilter chorus = f.createChorus();
 		EffectFilter com = f.createAutoWAH();
 		//music1.addEffect(flanger);
 		//music1.addEffect(chorus);
 		//music1.addEffect(com);
-		//music1.play();
+		music1.play();
 		//music1.addEffect(chorus);
 
 
 
 
 		//sample = audio.newSource( Gdx.files.internal("Dodge.wav" ) );
-
+		device = audio.newAudioDevice( sample.getSampleRate(), sample.getChannels() == 1 );
 		/*
 		AudioSampler sampler = (AudioSampler)Gdx.audio;
 		FileHandle file1 = Gdx.files.internal( "Failure.wav" );
@@ -225,18 +229,6 @@ public class GDXRoot extends ApplicationAdapter implements SoundEffect.OnComplet
 	
 	@Override
 	public void dispose () {
-		if(music1!=null)
-			music1.dispose();
-		if(music2!=null)
-			music2.dispose();
-		if(music3!=null)
-			music3.dispose();
-		if(sound1!=null)
-			sound1.dispose();
-		if(sound2!=null)
-			sound2.dispose();
-		if(sound3!=null)
-			sound3.dispose();
 		batch.dispose();
 		img.dispose();
 	}

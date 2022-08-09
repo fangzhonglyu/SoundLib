@@ -1,15 +1,18 @@
 /*
  * EffectFactory.java
  *
- * This is the factory class for effect filters
+ * This is the factory class for SoundEffects
  *
  * @author Barry Lyu
  * @date   6/25/22
  */
 
-package edu.cornell.gdiac.audio.desktop.backend;
+package edu.cornell.gdiac.backend;
+
+import org.lwjgl.openal.EXTEfx;
 import static org.lwjgl.openal.EXTEfx.*;
 import edu.cornell.gdiac.audio.EffectFilter;
+
 
 public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
     /**
@@ -50,11 +53,10 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
         ((Effect)reverb).setAttribute(AL_REVERB_LATE_REVERB_DELAY, def.REVERB_LATE_REVERB_DELAY);
         ((Effect)reverb).setAttribute(AL_REVERB_AIR_ABSORPTION_GAINHF, def.REVERB_AIR_ABSORPTION_GAINHF);
         ((Effect)reverb).setAttribute(AL_REVERB_ROOM_ROLLOFF_FACTOR, def.REVERB_ROOM_ROLLOFF_FACTOR);
-        ((Effect)reverb).reload();
     }
 
     /**
-     * Create a EAXReverb effect object based on the EAXReverbDef object
+     * Create a EAXReverb effect object based on the ReverbDef object
      *
      * @param def the EAXReverbDef object to create from
      */
@@ -75,7 +77,7 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
      * Update an existing EAXReverb effect based on the EAXReverbDef
      *
      * @param eaxReverb the EaxReverb effect to edit
-     * @param def the EAxReverbDef object to create from
+     * @param def       the EAxReverbDef object to create from
      */
     public void updateEAXReverb(EffectFilter eaxReverb, EAXReverbDef def) {
         ((Effect)eaxReverb).setAttribute(AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
@@ -101,7 +103,6 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
         ((Effect)eaxReverb).setAttribute(AL_EAXREVERB_HFREFERENCE, def.EAXREVERB_HFREFERENCE);
         ((Effect)eaxReverb).setAttribute(AL_EAXREVERB_LFREFERENCE, def.EAXREVERB_LFREFERENCE);
         ((Effect)eaxReverb).setAttribute(AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, def.EAXREVERB_ROOM_ROLLOFF_FACTOR);
-        ((Effect)eaxReverb).reload();
     }
 
     /**
@@ -136,7 +137,6 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
         ((Effect)chorus).setAttribute(AL_CHORUS_DEPTH,def.CHORUS_DEPTH);
         ((Effect)chorus).setAttribute(AL_CHORUS_FEEDBACK,def.CHORUS_FEEDBACK);
         ((Effect)chorus).setAttribute(AL_CHORUS_DELAY,def.CHORUS_DELAY);
-        ((Effect)chorus).reload();
     }
 
     /**
@@ -170,7 +170,6 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
         ((Effect)distortion).setAttribute(AL_DISTORTION_LOWPASS_CUTOFF, def.DISTORTION_LOWPASS_CUTOFF);
         ((Effect)distortion).setAttribute(AL_DISTORTION_EQCENTER, def.DISTORTION_EQCENTER);
         ((Effect)distortion).setAttribute(AL_DISTORTION_EQBANDWIDTH, def.DISTORTION_EQBANDWIDTH);
-        ((Effect)distortion).reload();
     }
 
     /**
@@ -204,7 +203,6 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
         ((Effect)echo).setAttribute(AL_ECHO_DAMPING, def.ECHO_DAMPING);
         ((Effect)echo).setAttribute(AL_ECHO_FEEDBACK, def.ECHO_FEEDBACK);
         ((Effect)echo).setAttribute(AL_ECHO_SPREAD, def.ECHO_SPREAD);
-        ((Effect)echo).reload();
     }
 
     /**
@@ -239,7 +237,6 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
         ((Effect)flanger).setAttribute(AL_FLANGER_DEPTH, def.FLANGER_DEPTH);
         ((Effect)flanger).setAttribute(AL_FLANGER_FEEDBACK, def.FLANGER_FEEDBACK);
         ((Effect)flanger).setAttribute(AL_FLANGER_DELAY, def.FLANGER_DELAY);
-        ((Effect) flanger).reload();
     }
 
     /**
@@ -271,7 +268,6 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
         ((Effect)freqShift).setAttribute(AL_FREQUENCY_SHIFTER_FREQUENCY,def.FREQUENCY_SHIFTER_FREQUENCY);
         ((Effect)freqShift).setAttribute(AL_FREQUENCY_SHIFTER_LEFT_DIRECTION,def.FREQUENCY_SHIFTER_LEFT_DIRECTION);
         ((Effect)freqShift).setAttribute(AL_FREQUENCY_SHIFTER_RIGHT_DIRECTION,def.FREQUENCY_SHIFTER_RIGHT_DIRECTION);
-        ((Effect)freqShift).reload();
     }
 
     /**
@@ -306,7 +302,6 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
         ((Effect)vocalMorpher).setAttribute(AL_VOCMORPHER_WAVEFORM,def.VOCAL_MORPHER_WAVEFORM);
         ((Effect)vocalMorpher).setAttribute(AL_VOCMORPHER_PHONEMEA_COARSE_TUNING,def.VOCAL_MORPHER_PHONEMEA_COARSE_TUNING);
         ((Effect)vocalMorpher).setAttribute(AL_VOCMORPHER_PHONEMEB_COARSE_TUNING,def.VOCAL_MORPHER_PHONEMEB_COARSE_TUNING);
-        ((Effect)vocalMorpher).reload();
     }
 
     /**
@@ -338,7 +333,6 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
         ((Effect)pitchShifter).setAttribute(AL_EFFECT_TYPE, AL_EFFECT_PITCH_SHIFTER);
         ((Effect)pitchShifter).setAttribute(AL_PITCH_SHIFTER_COARSE_TUNE,def.AL_PITCH_SHIFTER_DEFAULT_COARSE_TUNE);
         ((Effect)pitchShifter).setAttribute(AL_PITCH_SHIFTER_FINE_TUNE,def.AL_PITCH_SHIFTER_DEFAULT_FINE_TUNE);
-        ((Effect)pitchShifter).reload();
     }
 
     /**
@@ -370,7 +364,6 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
         ((Effect)ringMod).setAttribute(AL_RING_MODULATOR_FREQUENCY,def.RING_MODULATOR_FREQUENCY);
         ((Effect)ringMod).setAttribute(AL_RING_MODULATOR_HIGHPASS_CUTOFF,def.RING_MODULATOR_HIGHPASS_CUTOFF);
         ((Effect)ringMod).setAttribute(AL_RING_MODULATOR_WAVEFORM,def.RING_MODULATOR_WAVEFORM);
-        ((Effect)ringMod).reload();
     }
 
     /**
@@ -379,9 +372,9 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
      * @param def the AutoWAHDef object to create from
      */
     public EffectFilter createAutoWAH(AutoWAHDef def) {
-        EffectFilter autoWAH = new Effect();
-        updateAutoWAH(autoWAH, def);
-        return autoWAH;
+        EffectFilter AutoWAH = new Effect();
+        updateAutoWAH(AutoWAH, def);
+        return AutoWAH;
     }
 
     /**
@@ -394,16 +387,15 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
     /**
      * Update an existing AutoWAH effect based on the AutoWAHDef
      *
-     * @param autoWAH the AutoWAH effect to edit
+     * @param AutoWAH the AutoWAH effect to edit
      * @param def the AutoWAHDef object to create from
      */
-    public void updateAutoWAH(EffectFilter autoWAH, AutoWAHDef def) {
-        ((Effect)autoWAH).setAttribute(AL_EFFECT_TYPE, AL_EFFECT_AUTOWAH);
-        ((Effect)autoWAH).setAttribute(AL_AUTOWAH_ATTACK_TIME,def.AUTOWAH_ATTACK_TIME);
-        ((Effect)autoWAH).setAttribute(AL_AUTOWAH_RELEASE_TIME,def.AUTOWAH_RELEASE_TIME);
-        ((Effect)autoWAH).setAttribute(AL_AUTOWAH_RESONANCE,def.AUTOWAH_RESONANCE);
-        ((Effect)autoWAH).setAttribute(AL_AUTOWAH_PEAK_GAIN,def.AUTOWAH_PEAK_GAIN);
-        ((Effect)autoWAH).reload();
+    public void updateAutoWAH(EffectFilter AutoWAH, AutoWAHDef def) {
+        ((Effect)AutoWAH).setAttribute(AL_EFFECT_TYPE, AL_EFFECT_AUTOWAH);
+        ((Effect)AutoWAH).setAttribute(AL_AUTOWAH_ATTACK_TIME,def.AUTOWAH_ATTACK_TIME);
+        ((Effect)AutoWAH).setAttribute(AL_AUTOWAH_RELEASE_TIME,def.AUTOWAH_RELEASE_TIME);
+        ((Effect)AutoWAH).setAttribute(AL_AUTOWAH_RESONANCE,def.AUTOWAH_RESONANCE);
+        ((Effect)AutoWAH).setAttribute(AL_AUTOWAH_PEAK_GAIN,def.AUTOWAH_PEAK_GAIN);
     }
 
     /**
@@ -412,10 +404,9 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
      * @param def the CompressorDef object to create from
      */
     public EffectFilter createCompressor(CompressorDef def) {
-        System.out.println("allocating compressor");
-        EffectFilter compressor = new Effect();
-        updateCompressor(compressor, def);
-        return compressor;
+        EffectFilter Compressor = new Effect();
+        updateCompressor(Compressor, def);
+        return Compressor;
     }
 
     /**
@@ -428,13 +419,12 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
     /**
      * Update an existing Compressor effect based on the CompressorDef
      *
-     * @param compressor the Compressor effect to edit
+     * @param Compressor the Compressor effect to edit
      * @param def the CompressorDef object to create from
      */
-    public void updateCompressor(EffectFilter compressor, CompressorDef def) {
-        ((Effect)compressor).setAttribute(AL_EFFECT_TYPE, AL_EFFECT_COMPRESSOR);
-        ((Effect)compressor).setAttribute(AL_COMPRESSOR_ONOFF,def.AL_COMPRESSOR_DEFAULT_ONOFF);
-        ((Effect)compressor).reload();
+    public void updateCompressor(EffectFilter Compressor, CompressorDef def) {
+        ((Effect)Compressor).setAttribute(AL_EFFECT_TYPE, AL_EFFECT_COMPRESSOR);
+        ((Effect)Compressor).setAttribute(AL_COMPRESSOR_ONOFF,def.AL_COMPRESSOR_DEFAULT_ONOFF);
     }
 
     /**
@@ -443,9 +433,9 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
      * @param def the EqualizerDef object to create from
      */
     public EffectFilter createEqualizer(EqualizerDef def) {
-        EffectFilter equalizer = new Effect();
-        updateEqualizer(equalizer, def);
-        return equalizer;
+        EffectFilter Equalizer = new Effect();
+        updateEqualizer(Equalizer, def);
+        return Equalizer;
     }
 
     /**
@@ -458,21 +448,20 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
     /**
      * Update an existing Equalizer effect based on the EqualizerDef
      *
-     * @param equalizer the Equalizer effect to edit
+     * @param Equalizer the Equalizer effect to edit
      * @param def the EqualizerDef object to create from
      */
-    public void updateEqualizer(EffectFilter equalizer, EqualizerDef def) {
-        ((Effect)equalizer).setAttribute(AL_EFFECT_TYPE, AL_EFFECT_EQUALIZER);
-        ((Effect)equalizer).setAttribute(AL_EQUALIZER_LOW_GAIN,def.EQUALIZER_LOW_GAIN);
-        ((Effect)equalizer).setAttribute(AL_EQUALIZER_LOW_CUTOFF,def.EQUALIZER_LOW_CUTOFF);
-        ((Effect)equalizer).setAttribute(AL_EQUALIZER_MID1_GAIN,def.EQUALIZER_MID1_GAIN);
-        ((Effect)equalizer).setAttribute(AL_EQUALIZER_MID1_CENTER,def.EQUALIZER_MID1_CENTER);
-        ((Effect)equalizer).setAttribute(AL_EQUALIZER_MID1_WIDTH,def.EQUALIZER_MID1_WIDTH);
-        ((Effect)equalizer).setAttribute(AL_EQUALIZER_MID2_GAIN,def.EQUALIZER_MID2_GAIN);
-        ((Effect)equalizer).setAttribute(AL_EQUALIZER_MID2_CENTER,def.EQUALIZER_MID2_CENTER);
-        ((Effect)equalizer).setAttribute(AL_EQUALIZER_MID2_WIDTH,def.EQUALIZER_MID2_WIDTH);
-        ((Effect)equalizer).setAttribute(AL_EQUALIZER_HIGH_GAIN,def.EQUALIZER_HIGH_GAIN);
-        ((Effect)equalizer).setAttribute(AL_EQUALIZER_HIGH_CUTOFF,def.EQUALIZER_HIGH_CUTOFF);
-        ((Effect)equalizer).reload();
+    public void updateEqualizer(EffectFilter Equalizer, EqualizerDef def) {
+        ((Effect)Equalizer).setAttribute(AL_EFFECT_TYPE, AL_EFFECT_EQUALIZER);
+        ((Effect)Equalizer).setAttribute(AL_EQUALIZER_LOW_GAIN,def.EQUALIZER_LOW_GAIN);
+        ((Effect)Equalizer).setAttribute(AL_EQUALIZER_LOW_CUTOFF,def.EQUALIZER_LOW_CUTOFF);
+        ((Effect)Equalizer).setAttribute(AL_EQUALIZER_MID1_GAIN,def.EQUALIZER_MID1_GAIN);
+        ((Effect)Equalizer).setAttribute(AL_EQUALIZER_MID1_CENTER,def.EQUALIZER_MID1_CENTER);
+        ((Effect)Equalizer).setAttribute(AL_EQUALIZER_MID1_WIDTH,def.EQUALIZER_MID1_WIDTH);
+        ((Effect)Equalizer).setAttribute(AL_EQUALIZER_MID2_GAIN,def.EQUALIZER_MID2_GAIN);
+        ((Effect)Equalizer).setAttribute(AL_EQUALIZER_MID2_CENTER,def.EQUALIZER_MID2_CENTER);
+        ((Effect)Equalizer).setAttribute(AL_EQUALIZER_MID2_WIDTH,def.EQUALIZER_MID2_WIDTH);
+        ((Effect)Equalizer).setAttribute(AL_EQUALIZER_HIGH_GAIN,def.EQUALIZER_HIGH_GAIN);
+        ((Effect)Equalizer).setAttribute(AL_EQUALIZER_HIGH_CUTOFF,def.EQUALIZER_HIGH_CUTOFF);
     }
 }

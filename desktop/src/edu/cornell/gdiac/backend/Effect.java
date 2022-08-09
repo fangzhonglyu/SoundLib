@@ -5,7 +5,7 @@
  * @date   6/25/22
  */
 
-package edu.cornell.gdiac.audio.desktop.backend;
+package edu.cornell.gdiac.backend;
 
 import static org.lwjgl.openal.EXTEfx.*;
 
@@ -17,14 +17,16 @@ import static org.lwjgl.openal.EXTEfx.*;
  *
  * */
 public class Effect implements edu.cornell.gdiac.audio.EffectFilter {
-    /** The id of the effect in openAL engine */
+    /** The id of the effect in openAL engine*/
     private int id;
-    /** The id of the auxiliary slot the effect is in */
+    /** The id of the auxiliary slot the effect is in*/
     public int slot = -1;
 
     public static GDXAudio engine;
 
-    /** Dispose the sound effect and release its resources */
+    /**
+     * Dispose the sound effect and release its resources
+     * */
     public void dispose(){
         if(slot != -1)
             engine.unloadEffect(slot);
@@ -37,13 +39,8 @@ public class Effect implements edu.cornell.gdiac.audio.EffectFilter {
     }
 
     /**
-     * If the effect already has a slot, then it will be reloaded to the slot, otherwise the method simply returns
+     * Set the attributes of an effect
      * */
-    public void reload(){
-        engine.reloadEffect(this);
-    }
-
-    /** Set the attributes of an effect */
     public void setAttribute(int att, int value){
         alEffecti(id,att,value);
     }

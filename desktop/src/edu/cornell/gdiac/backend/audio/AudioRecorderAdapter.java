@@ -6,7 +6,7 @@
  * @author Walker M. White
  * @date   04/15/20
  */
-package edu.cornell.gdiac.audio.desktop.backend.audio;
+package edu.cornell.gdiac.backend.audio;
 
 import com.badlogic.gdx.audio.AudioRecorder;
 
