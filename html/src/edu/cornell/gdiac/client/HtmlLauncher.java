@@ -3,7 +3,7 @@ package edu.cornell.gdiac.client;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import edu.cornell.gdiac.GDXRoot;
+import edu.cornell.gdiac.audio.GDXRoot;
 
 public class HtmlLauncher extends GwtApplication {
 
