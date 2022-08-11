@@ -25,7 +25,6 @@ package edu.cornell.gdiac.audio;
  *  AL_EFFECT_PITCH_SHIFTER
  *  AL_EFFECT_RING_MODULATOR
  *  AL_EFFECT_AUTOWAH
- *  AL_EFFECT_COMPRESSOR
  *  AL_EFFECT_EQUALIZER
  *  AL_EFFECT_EAXREVERB
  *
@@ -1038,50 +1037,6 @@ public interface EffectFactory {
      * @param def the AutoWAHDef object to create from
      */
     public void updateAutoWAH(EffectFilter AutoWAH, AutoWAHDef def);
-
-    /**
-     * This class contains definitions for constructing a Compressor object
-     *
-     * The Automatic Gain Control effect performs the same task as a studio compressor – evening out the audio dynamic
-     * range of an input sound. This results in audio exhibiting smaller variation in intensity between the loudest
-     * and quietest portions. The AGC Compressor will boost quieter portions of the audio, while louder portions will
-     * stay the same or may even be reduced. The Compressor effect cannot be tweaked in depth – it can just be
-     * switched on and off.
-     *
-     * Edit properties of a CompressorDef object then use {@link #createCompressor()} or {@link #updateCompressor(EffectFilter, CompressorDef)} )}
-     * to transfer properties from CompressorDef to the effect object.
-     */
-    public class CompressorDef {
-        // Default Settings for Compressor effects
-
-        /**
-         * The OpenAL Effect Extension Compressor can only be switched on and off – it cannot be adjusted.
-         *
-         * 0: Off
-         * 1: On
-         */
-        public float AL_COMPRESSOR_DEFAULT_ONOFF = 1;
-    }
-
-    /**
-     * Create a Compressor effect object based on the CompressorDef object
-     *
-     * @param def the CompressorDef object to create from
-     */
-    public EffectFilter createCompressor(CompressorDef def);
-
-    /**
-     * Create default Compressor object
-     */
-    public EffectFilter createCompressor();
-
-    /**
-     * Update an existing Compressor effect based on the CompressorDef
-     *
-     * @param Compressor the Compressor effect to edit
-     * @param def the CompressorDef object to create from
-     */
-    public void updateCompressor(EffectFilter Compressor, CompressorDef def);
 
     /**
      * This class contains definitions for constructing an Equalizer object
