@@ -407,37 +407,6 @@ public class EffectFactory implements edu.cornell.gdiac.audio.EffectFactory {
     }
 
     /**
-     * Create a Compressor effect object based on the CompressorDef object
-     *
-     * @param def the CompressorDef object to create from
-     */
-    public EffectFilter createCompressor(CompressorDef def) {
-        System.out.println("allocating compressor");
-        EffectFilter compressor = new Effect();
-        updateCompressor(compressor, def);
-        return compressor;
-    }
-
-    /**
-     * Create default Compressor object
-     */
-    public EffectFilter createCompressor() {
-        return createCompressor(new CompressorDef());
-    }
-
-    /**
-     * Update an existing Compressor effect based on the CompressorDef
-     *
-     * @param compressor the Compressor effect to edit
-     * @param def the CompressorDef object to create from
-     */
-    public void updateCompressor(EffectFilter compressor, CompressorDef def) {
-        ((Effect)compressor).setAttribute(AL_EFFECT_TYPE, AL_EFFECT_COMPRESSOR);
-        ((Effect)compressor).setAttribute(AL_COMPRESSOR_ONOFF,def.AL_COMPRESSOR_DEFAULT_ONOFF);
-        ((Effect)compressor).reload();
-    }
-
-    /**
      * Create a Equalizer effect object based on the EqualizerDef object
      *
      * @param def the EqualizerDef object to create from
