@@ -7,7 +7,7 @@
  * @date   4/15/20
  */
 
-package edu.cornell.gdiac.audio.desktop.backend.audio;
+package edu.cornell.gdiac.backend.audio;
 
 /**
  *  This interface represents a logical buffer attached to a source (or sources) in OpenAL.

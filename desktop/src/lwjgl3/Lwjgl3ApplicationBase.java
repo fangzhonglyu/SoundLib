@@ -2,7 +2,7 @@
 package lwjgl3;
 
 import com.badlogic.gdx.Application;
-import edu.cornell.gdiac.audio.desktop.backend.GDXAudio;
+import edu.cornell.gdiac.backend.GDXAudio;
 
 public interface Lwjgl3ApplicationBase extends Application {
 

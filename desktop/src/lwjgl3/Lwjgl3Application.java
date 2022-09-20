@@ -19,7 +19,7 @@ package lwjgl3;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.glutils.GLVersion;
 import com.badlogic.gdx.utils.*;
-import edu.cornell.gdiac.audio.desktop.backend.GDXAudio;
+import edu.cornell.gdiac.backend.GDXAudio;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;

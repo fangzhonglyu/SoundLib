@@ -1,30 +1,31 @@
 /*
- * MP3Source.java
+ * WavSource.java
  *
- * This is an adaptation of the LibGDX file MP3.java by Nathan Sweet, adapted to our
- * AudioSource interface.  This interface improves seek behavior, which is notoriously
- * tricky on an MP3 file.
+ * This is an adaptation of the LibGDX file Wav.java by Nathan Sweet, adapted to our
+ * AudioSource interface.  This interface improves seek behavior and caches important
+ * query information.
  *
  * @author Walker M. White
  * @date   4/15/20
  */
-package edu.cornell.gdiac.audio.desktop.backend.audio;
+package edu.cornell.gdiac.backend.audio;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.StreamUtils;
 import edu.cornell.gdiac.audio.*;
-import javazoom.jl.decoder.*;
 
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
- * This class is an implementation of {@link AudioSource} for MP3 files.
+ * This class is an implementation of {@link AudioSource} for WAV files.
  *
- * MP3 files may be streamed or loaded into memory. 
+ * OGG files may be streamed or loaded into memory. While the WAV format supports 
+ * more than 2 channels, LibGDX only supports mono and stereo.
  */
-public class Mp3Source implements AudioSource {
+public class WavSource implements AudioSource {
     /** The source file */
     protected FileHandle source;
     /** The number of channels (1 for mono, 2 for stereo) */
@@ -36,63 +37,32 @@ public class Mp3Source implements AudioSource {
     /** The length of the MP3 asset in bytes */
     protected long byteSize;
 
+    /** An initial WAV input stream for header data */
+    protected WavInputStream input;
+
     /** 
-     * Creates an MP3 source from the given file.
+     * Creates an WAV source from the given file.
      *
-     * @param file  The MP3 file
+     * @param file  The WAV file
      *
      * @throws GdxRuntimeException if the asset could not be loaded
      */
-    public Mp3Source(FileHandle file) {
+    public WavSource(FileHandle file) {
         source = file;
-        init();
+        input = new WavInputStream( file );
+        channels = input.channels;
+        sampleRate = input.sampleRate;
+        byteSize = input.dataRemaining;
+        long samples = byteSize / (2 * channels);
+        duration = samples / (float)sampleRate;
     }
-    
-    /**
-     * Initializes the audio source with header information.
-     *
-     * This requires an initial scan of the file
-     *
-     * @throws GdxRuntimeException if the asset could not be initialized
-     */
-    private void init() {
-        Bitstream bitstream = new Bitstream(source.read());
-        MP3Decoder decoder = new MP3Decoder();
 
-        try {
-            OutputBuffer outputBuffer = null;
-            sampleRate = -1;
-            channels = -1;
-            while (true) {
-                Header header = bitstream.readFrame();
-                if (header == null) break;
-                if (outputBuffer == null) {
-                    channels = header.mode() == Header.SINGLE_CHANNEL ? 1 : 2;
-                    outputBuffer = new OutputBuffer( channels, false );
-                    decoder.setOutputBuffer( outputBuffer );
-                    sampleRate = header.getSampleRate();
-                }
-                try {
-                    decoder.decodeFrame( header, bitstream );
-                } catch (Exception ignored) {
-                    // JLayer's decoder throws ArrayIndexOutOfBoundsException sometimes!?
-                }
-                bitstream.closeFrame();
-                byteSize += outputBuffer.reset();
-            }
-            bitstream.closeFrame();
-            long samples = byteSize / (2 * channels);
-            duration = samples / (float)sampleRate;
-        } catch (Throwable ex) {
-            throw new GdxRuntimeException("Error reading audio data.", ex);
-        }
-    }
-    
     /**
      * Deletes this MP3 source, disposing of all resources.
      */
     @Override
     public void dispose() {
+        input = null;
         source = null;
         channels = 0;
         sampleRate = 0;
@@ -185,37 +155,18 @@ public class Mp3Source implements AudioSource {
      */
     @Override
     public ByteBuffer getData() {
-        ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
-        Bitstream bitstream = new Bitstream(source.read());
-        MP3Decoder decoder = new MP3Decoder();
         ByteBuffer result = null;
-
         try {
-            OutputBuffer outputBuffer = null;
-            int channels = -1;
-            while (true) {
-                Header header = bitstream.readFrame();
-                if (header == null) break;
-                if (outputBuffer == null) {
-                    channels = header.mode() == Header.SINGLE_CHANNEL ? 1 : 2;
-                    outputBuffer = new OutputBuffer(channels, false);
-                    decoder.setOutputBuffer(outputBuffer);
-                }
-                try {
-                    decoder.decodeFrame(header, bitstream);
-                } catch (Exception ignored) {
-                    // JLayer's decoder throws ArrayIndexOutOfBoundsException sometimes!?
-                }
-                bitstream.closeFrame();
-                output.write(outputBuffer.getBuffer(), 0, outputBuffer.reset());
+            if (input == null) {
+                input = new WavInputStream( source );
             }
-            bitstream.close();
-            result = ByteBuffer.allocateDirect((int)byteSize);
-            result.order( ByteOrder.nativeOrder());
-            result.put(output.toByteArray(), 0, (int)byteSize);
-            result.flip();
-        } catch (Throwable ex) {
-            throw new GdxRuntimeException("Error reading audio data.", ex);
+            result = ByteBuffer.allocateDirect( (int)byteSize );
+            result.order( ByteOrder.nativeOrder() );
+            StreamUtils.copyStream( input, result, (int)byteSize );
+        } catch (IOException e) {
+            result = null;
+        } finally {
+            StreamUtils.closeQuietly( input );
         }
         return result;
     }
@@ -232,41 +183,27 @@ public class Mp3Source implements AudioSource {
 
     // #mark -
     /**
-     * This class is an {@link AudioStream} for MP3 files.
+     * This class is an {@link AudioStream} for WAV files.
      *
      * This stream is really chunky.  If we cared enough, we would have an internal
      * buffer for finer grained reads.
      */
     public class Stream implements AudioStream {
-        /** The MP3 bitstream */
-        private Bitstream bitstream;
-        /** The MP3 decoder */
-        private MP3Decoder decoder;
-        /** An output buffer to pull from the decoder */
-        private OutputBuffer outputBuffer;
+        /** The current WAV input stream */
+        private WavInputStream input;
         /** The current byte position in the stream */
         private long byteOffs;
         /** A byte array for grabbing data for sample queries */
         private byte[] tempBytes;
         
         /**
-         * Creates a new MP3 stream
+         * Creates a new WAV stream
          *
          * @throw GdxRuntimeException if the stream could not be initialized
          */
         public Stream() {
-            bitstream = new Bitstream(source.read());
-            decoder = new MP3Decoder();
-            try {
-                Header header = bitstream.readFrame();
-                if (header == null) throw new GdxRuntimeException("Empty MP3");
-                int channels = header.mode() == Header.SINGLE_CHANNEL ? 1 : 2;
-                outputBuffer = new OutputBuffer(channels, false);
-                decoder.setOutputBuffer(outputBuffer);
-                byteOffs = 0;
-            } catch (BitstreamException e) {
-                throw new GdxRuntimeException("error while preloading mp3", e);
-            }
+            input = new WavInputStream( source );
+            byteOffs = 0;
         }
         
         /** 
@@ -275,9 +212,9 @@ public class Mp3Source implements AudioSource {
          * @return the {@link AudioSource} that generated this stream.
          */
          public AudioSource getSource() {
-            return Mp3Source.this;
+            return WavSource.this;
          }
-    
+        
         /**
          * Returns the total number of bytes in this stream.
          *
@@ -356,41 +293,16 @@ public class Mp3Source implements AudioSource {
          * @return the number of bytes read
          */
         @Override
-        public int read (byte[] buffer) {
+        public int read(byte[] buffer) {
+            if (input == null) {
+                input = new WavInputStream( source );
+            }
             try {
-                boolean setup = bitstream == null;
-                if (setup) {
-                    bitstream = new Bitstream(source.read());
-                    decoder = new MP3Decoder();
-                }
-                
-                int totalLength = 0;
-                int minRequiredLength = buffer.length - OutputBuffer.BUFFERSIZE * 2;
-                while (totalLength <= minRequiredLength) {
-                    Header header = bitstream.readFrame();
-                    if (header == null) break;
-                    if (setup) {
-                        int channels = header.mode() == Header.SINGLE_CHANNEL ? 1 : 2;
-                        outputBuffer = new OutputBuffer(channels, false);
-                        decoder.setOutputBuffer(outputBuffer);
-                        setup = false;
-                    }
-                    try {
-                        decoder.decodeFrame(header, bitstream);
-                    } catch (Exception ignored) {
-                        // JLayer's decoder throws ArrayIndexOutOfBoundsException sometimes!?
-                    }
-                    bitstream.closeFrame();
-                    
-                    int length = outputBuffer.reset();
-                    System.arraycopy(outputBuffer.getBuffer(), 0, buffer, totalLength, length);
-                    totalLength += length;
-                    byteOffs += length;
-                }
-                return totalLength;
-            } catch (Throwable ex) {
-                reset();
-                throw new GdxRuntimeException("Error reading audio data.", ex);
+                int chunk = input.read(buffer);
+                byteOffs += chunk;
+                return chunk;
+            } catch (IOException ex) {
+                throw new GdxRuntimeException("Error reading WAV file: " + source, ex);
             }
         }
         
@@ -491,34 +403,17 @@ public class Mp3Source implements AudioSource {
                 throw new IllegalArgumentException( "Illegal seek parameters" );
             }
             byte[] temp = new byte[buffer.length/2];
+            
             if (pos < byteOffs) {
-                reset();
+                StreamUtils.closeQuietly( input );
+                input = new WavInputStream( source );
+                byteOffs = 0;
             }
             
             try {
-                boolean setup = bitstream == null;
-                if (setup) {
-                    bitstream = new Bitstream(source.read());
-                    decoder = new MP3Decoder();
-                }
-                
                 int chunk = 1;
                 while (chunk > 0 && byteOffs < pos) {
-                    Header header = bitstream.readFrame();
-                    if (header == null) break;
-                    if (setup) {
-                        int channels = header.mode() == Header.SINGLE_CHANNEL ? 1 : 2;
-                        outputBuffer = new OutputBuffer(channels, false);
-                        decoder.setOutputBuffer(outputBuffer);
-                        setup = false;
-                    }
-                    try {
-                        decoder.decodeFrame(header, bitstream);
-                    } catch (Exception ignored) {
-                        // JLayer's decoder throws ArrayIndexOutOfBoundsException sometimes!?
-                    }
-                    bitstream.closeFrame();
-                    chunk = outputBuffer.reset();
+                    chunk = input.read(temp);
                     byteOffs += chunk;
                 }
                 
@@ -527,17 +422,16 @@ public class Mp3Source implements AudioSource {
                     return 0;
                 }
                 
-                System.arraycopy(outputBuffer.getBuffer(), 0, temp, 0, chunk);
                 int mark = (int)(byteOffs-pos);
                 System.arraycopy( temp, mark, buffer,0,chunk-mark );
                 mark = chunk-mark;
-                chunk = read( temp );
+                chunk = input.read( temp );
                 System.arraycopy( temp,0, buffer, mark, chunk );
                 
                 return chunk+mark;
-            } catch (Throwable ex) {
+            } catch (Exception e) {
                 reset();
-                throw new GdxRuntimeException("Error reading audio data.", ex);
+                return 0;
             }
         }
         
@@ -625,12 +519,8 @@ public class Mp3Source implements AudioSource {
          */
         @Override
         public void reset() {
-            if (bitstream == null) return;
-            try {
-                bitstream.close();
-            } catch (BitstreamException ignored) {
-            }
-            bitstream = null;
+            StreamUtils.closeQuietly(input);
+            input = null;
             byteOffs = 0;
         }
         
@@ -640,9 +530,13 @@ public class Mp3Source implements AudioSource {
          * This differs from {@link #reset} in that it assumes the asset will need
          * to be streamed immediately, so it preserves any internal memory.
          */
-         @Override
+        @Override
         public void loop() {
-            reset();
+            StreamUtils.closeQuietly(input);
+            input = null;
+            byteOffs = 0;
         }
     }
-}
+
+
+    }
